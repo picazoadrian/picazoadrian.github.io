@@ -98,7 +98,7 @@ video { display: block; max-width: 100%; }
 .masthead__name {
   top: 24px;
   left: var(--edge);
-  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  text-transform: uppercase;
 }
 
 /* "Madrid" y el rol comparten tamaño y color con la intro. Al bajar de 12px a
@@ -250,6 +250,8 @@ body.is-loading { overflow: hidden; }
 
 .lightbox[hidden] { display: none; }
 
+.lightbox:focus { outline: none; }
+
 .lightbox__stage { max-width: 100%; max-height: 100%; }
 
 .lightbox__media {
@@ -264,13 +266,68 @@ body.is-loading { overflow: hidden; }
   position: absolute;
   top: 2vmin;
   right: 2vmin;
+  width: 28px;
+  height: 28px;
+  padding: 0;
   border: 0;
   background: none;
-  color: #fff;
-  font-size: 32px;
-  line-height: 1;
   cursor: pointer;
 }
+
+/* El foco del sistema pinta un anillo azul que no pega con nada: se sustituye
+   por uno propio, fino, y solo cuando la navegación es por teclado. */
+.lightbox__close:focus { outline: none; }
+
+.lightbox__close:focus-visible {
+  outline: 1px solid rgba(255, 255, 255, 0.6);
+  outline-offset: 6px;
+}
+
+.lightbox__close svg {
+  width: 100%;
+  height: 100%;
+  stroke: #ffffff;
+  stroke-width: 0.75;      /* trazo fino: la X es una línea, no un glifo */
+  stroke-linecap: square;
+  fill: none;
+  vector-effect: non-scaling-stroke;
+}
+
+/* ---------- Cursor a medida ----------
+   Un punto negro de 10px que sustituye al puntero del sistema, y que se vuelve
+   blanco sobre lo que se puede pulsar. El blanco lleva un contorno tenue: sin
+   él desaparecería sobre el fondo blanco de la página, que es justo donde está
+   el enlace de contacto.
+
+   La clase la pone main.js, así que si el JS no llega a ejecutarse el puntero
+   normal sigue ahí y la página no se queda sin cursor. */
+
+.cursor { display: none; }
+
+html.has-custom-cursor,
+html.has-custom-cursor * { cursor: none !important; }
+
+html.has-custom-cursor .cursor {
+  display: block;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--color-ink-strong);
+  pointer-events: none;
+  transform: translate3d(-100px, -100px, 0);
+  transition: background-color 150ms ease, border-color 150ms ease;
+}
+
+html.has-custom-cursor .cursor.is-interactive {
+  background: #ffffff;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35);
+}
+
+html.has-custom-cursor .cursor.is-outside { opacity: 0; }
 
 /* ---------- Pie ---------- */
 
@@ -291,8 +348,9 @@ body.is-loading { overflow: hidden; }
 
 .colophon__contact {
   left: var(--edge-tight);
-  color: inherit;
+  color: inherit;                /* nada de azul de enlace visitado */
   text-decoration: none;
+  cursor: pointer;
 }
 
 .colophon__top {
@@ -316,10 +374,7 @@ body.is-loading { overflow: hidden; }
 
   .masthead__name { top: 20px; }
 
-  .masthead__role {
-    top: 21.5px;
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  }
+  .masthead__role { top: 21.5px; }
 
   .masthead__place { display: none; }   /* no existe en el boceto móvil */
 

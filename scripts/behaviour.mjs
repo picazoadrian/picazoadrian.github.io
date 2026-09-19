@@ -69,6 +69,50 @@ const contact = await page.evaluate(() => {
   const a = document.querySelector('.colophon__contact');
   return { tag: a.tagName, href: a.getAttribute('href'), rel: a.getAttribute('rel') };
 });
+const cursor = await page.evaluate(() => {
+  const html = document.documentElement;
+  const dot = document.getElementById('cursor');
+  const s = getComputedStyle(dot);
+  const link = getComputedStyle(document.querySelector('.colophon__contact'));
+  return {
+    active: html.classList.contains('has-custom-cursor'),
+    size: s.width + '×' + s.height,
+    round: s.borderRadius,
+    hidesNative: getComputedStyle(document.body).cursor,
+    linkColor: link.color,
+    linkDecoration: link.textDecorationLine
+  };
+});
+
+check('cursor a medida activo', cursor.active);
+check('mide 10px y es redondo', cursor.size === '10px×10px' && cursor.round === '50%', cursor.size + ' r' + cursor.round);
+check('oculta el puntero del sistema', cursor.hidesNative === 'none', cursor.hidesNative);
+check('Contact me sin azul ni subrayado',
+  cursor.linkColor === 'rgb(0, 0, 0)' && cursor.linkDecoration === 'none',
+  cursor.linkColor + ' / ' + cursor.linkDecoration);
+
+/* El punto se vuelve blanco sobre lo pulsable */
+await page.mouse.move(400, 400);          // sobre una card
+await page.waitForTimeout(120);
+const overCard = await page.evaluate(() => document.getElementById('cursor').classList.contains('is-interactive'));
+await page.mouse.move(700, 80);           // zona muerta del header
+await page.waitForTimeout(120);
+const overNothing = await page.evaluate(() => document.getElementById('cursor').classList.contains('is-interactive'));
+check('se vuelve blanco sobre lo pulsable', overCard && !overNothing, `card:${overCard} vacío:${overNothing}`);
+
+const closeIcon = await page.evaluate(() => {
+  const svg = document.querySelector('.lightbox__close svg');
+  if (!svg) return null;
+  return getComputedStyle(svg).strokeWidth;
+});
+check('la X de cerrar es de trazo fino', closeIcon === '0.75px', closeIcon || 'no hay svg');
+
+const nameFont = await page.evaluate(() => {
+  const s = getComputedStyle(document.querySelector('.masthead__name'));
+  return s.fontFamily.split(',')[0].replace(/["']/g, '') + ' / ' + s.textTransform;
+});
+check('el nombre va en Inter y en mayúscula', nameFont === 'Inter / uppercase', nameFont);
+
 check('Contact me enlaza a LinkedIn',
   contact.tag === 'A' && contact.href === 'https://www.linkedin.com/in/adrian-picazo/' && contact.rel === 'noopener',
   contact.href || '');
@@ -78,6 +122,11 @@ const barY = async () => page.evaluate(() => {
   const frame = document.querySelector('.card__frame');
   return bar.getBoundingClientRect().top - frame.getBoundingClientRect().bottom;
 });
+
+/* Las pruebas del cursor han paseado el ratón por encima de una card: hay que
+   dejar que la barra termine de bajar antes de medir el estado de reposo. */
+await page.mouse.move(2, 2);
+await page.waitForTimeout(800);
 
 const restingOffset = await barY();
 check('barra oculta en reposo', restingOffset > -1, `offset ${restingOffset.toFixed(1)}px`);

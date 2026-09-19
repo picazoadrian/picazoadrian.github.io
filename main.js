@@ -14,6 +14,44 @@
 
   var lastFocused = null;
 
+  /* ---------- Cursor a medida ---------- */
+
+  function runCursor() {
+    /* Solo donde hay un puntero de verdad: en táctil no hay nada que sustituir. */
+    if (!finePointer.matches) return;
+
+    var dot = document.getElementById('cursor');
+    if (!dot) return;
+
+    document.documentElement.classList.add('has-custom-cursor');
+
+    var x = -100;
+    var y = -100;
+    var pending = false;
+
+    /* El pintado se agrupa en el frame: mousemove dispara mucho más a menudo. */
+    var paint = function () {
+      pending = false;
+      dot.style.transform = 'translate3d(' + (x - 5) + 'px,' + (y - 5) + 'px,0)';
+    };
+
+    document.addEventListener('mousemove', function (event) {
+      x = event.clientX;
+      y = event.clientY;
+      dot.classList.remove('is-outside');
+      dot.classList.toggle(
+        'is-interactive',
+        /* El velo del lightbox cuenta: pulsarlo cierra. Además, sobre su fondo
+           negro un punto negro sería invisible. */
+        !!(event.target.closest && event.target.closest('a, button, .card, .lightbox'))
+      );
+      if (!pending) { pending = true; requestAnimationFrame(paint); }
+    });
+
+    document.addEventListener('mouseleave', function () { dot.classList.add('is-outside'); });
+    document.addEventListener('mouseenter', function () { dot.classList.remove('is-outside'); });
+  }
+
   /* ---------- Pantalla de carga ---------- */
 
   function runLoader() {
@@ -217,7 +255,10 @@
 
     lightbox.hidden = false;
     document.body.classList.add('is-locked');
-    closeBtn.focus();
+    /* Se enfoca el diálogo, no el aspa: el foco queda dentro igual, pero no se
+       dibuja un anillo sobre el botón nada más abrir con el ratón. Al tabular,
+       el foco pasa al aspa y ahí sí se ve, que es cuando sirve. */
+    lightbox.focus();
   }
 
   function closeLightbox() {
@@ -256,6 +297,7 @@
   /* ---------- Arranque ---------- */
 
   runLoader();
+  runCursor();
   render();
   observeVideos();
 

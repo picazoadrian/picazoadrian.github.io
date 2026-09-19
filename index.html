@@ -19,6 +19,7 @@
 </head>
 <body id="top">
   <div class="loader" id="loader" aria-hidden="true"><span class="loader__square"></span></div>
+  <div class="cursor" id="cursor" aria-hidden="true"></div>
 
   <a class="skip-link" href="#work">Skip to work</a>
 
@@ -41,8 +42,12 @@
   </footer>
 
   <!-- Lightbox: solo se activa donde hay hover real (escritorio) -->
-  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Project preview" hidden>
-    <button class="lightbox__close" type="button" aria-label="Close">&times;</button>
+  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Project preview" tabindex="-1" hidden>
+    <button class="lightbox__close" type="button" aria-label="Close">
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M4 4 L20 20 M20 4 L4 20" />
+      </svg>
+    </button>
     <div class="lightbox__stage"></div>
   </div>
 
