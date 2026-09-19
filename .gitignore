@@ -1,3 +1,8 @@
 .DS_Store
 ffmpeg2pass-*.log
 node_modules/
+
+# Material de referencia y salidas de los gates: pesado, regenerable y no forma
+# parte del sitio publicado. Se recrea con `node scripts/figma-ingest.mjs`.
+docs/*.png
+docs/figma-raw.json
