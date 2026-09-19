@@ -72,9 +72,9 @@
     var finish = function () {
       if (done) return;
       done = true;
-      loader.classList.add('is-done');
+      /* Sin desvanecido: en cuanto el cuadrado para, el velo desaparece. */
+      loader.remove();
       document.body.classList.remove('is-loading');
-      loader.addEventListener('transitionend', function () { loader.remove(); }, { once: true });
     };
 
     square.addEventListener('animationend', finish, { once: true });

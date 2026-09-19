@@ -21,7 +21,8 @@
   --design-w: 1512;
 
   --color-bg: #ffffff;
-  --color-ink: #202020;          /* header e intro en escritorio */
+  --color-ink: #202020;          /* el nombre y el pie */
+  --color-para: #909090;         /* intro, "Madrid" y el rol */
   --color-ink-strong: #000000;   /* footer y título de la barra */
   --color-muted: #b0b0b0;        /* subtítulo de la barra */
   --color-card-bg: #f4f4f4;      /* fondo de card mientras no hay media */
@@ -46,9 +47,8 @@
   --bar-duration: 600ms;
   --bar-ease: cubic-bezier(0.16, 1, 0.3, 1);
 
-  --loader-size: 24px;
+  --loader-size: 12px;
   --loader-spin: 1400ms;   /* dos vueltas completas */
-  --loader-fade: 400ms;
 }
 
 *,
@@ -107,6 +107,7 @@ video { display: block; max-width: 100%; }
 .masthead__place,
 .masthead__role {
   top: 25.5px;
+  color: var(--color-para);
   font-size: var(--type-small);
   line-height: 12px;
 }
@@ -125,6 +126,7 @@ video { display: block; max-width: 100%; }
   height: var(--intro-block-h);
   margin: 0;
   padding: var(--intro-offset) 0 0 var(--edge);
+  color: var(--color-para);
   font-size: var(--type-small);
   line-height: 12px;
 }
@@ -184,12 +186,16 @@ video { display: block; max-width: 100%; }
   font-size: 10px;
   font-weight: 500;
   line-height: 12px;
+  font-family: 'Inter', system-ui, sans-serif;
   transform: translateY(100%);
   transition: transform var(--bar-duration) var(--bar-ease);
   will-change: transform;
 }
 
-.card__title { color: var(--color-ink-strong); }
+.card__title {
+  color: var(--color-ink-strong);
+  font-weight: 400;              /* la primera palabra, en regular */
+}
 .card__subtitle { color: var(--color-muted); }
 
 /* Escritorio: sube con el ratón encima y baja, con la misma curva, al salir */
@@ -204,8 +210,8 @@ video { display: block; max-width: 100%; }
 
 /* ---------- Pantalla de carga ----------
    Un cuadrado que da dos vueltas con la misma curva que la barra del hover:
-   sale disparado y frena en seco. Al terminar, el velo se desvanece y main.js
-   retira el nodo. */
+   sale disparado y frena en seco. En cuanto para, main.js retira el nodo de
+   golpe, sin desvanecido. */
 
 .loader {
   position: fixed;
@@ -215,7 +221,6 @@ video { display: block; max-width: 100%; }
   align-items: center;
   justify-content: center;
   background: var(--color-bg);
-  transition: opacity var(--loader-fade) ease;
 }
 
 .loader__square {
@@ -230,7 +235,7 @@ video { display: block; max-width: 100%; }
   to   { transform: rotate(720deg); }
 }
 
-.loader.is-done { opacity: 0; pointer-events: none; }
+/* Al parar el cuadrado, el velo se va de golpe: sin desvanecido. */
 
 /* Mientras carga no se hace scroll por detrás del velo */
 body.is-loading { overflow: hidden; }

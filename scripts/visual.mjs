@@ -23,9 +23,13 @@ import { fileURLToPath } from 'node:url';
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
 const WHICH = process.argv[2] || 'pc';
 
+/* `h` es la altura del FRAME DE FIGMA, no la de la página: desde que se añadió
+   la tercera fila, la web es más alta que el boceto. `compare` acota el diff a
+   la franja donde ambos siguen describiendo lo mismo — hasta donde el boceto
+   pone su pie, que en la web ya son más piezas. */
 const VARIANTS = {
-  pc:     { w: 1512, h: 1204, figma: 'figma-2-66.png',  objectPosition: '56.35% center' },
-  mobile: { w: 402,  h: 2140, figma: 'figma-9-167.png', objectPosition: '20.15% center' }
+  pc:     { w: 1512, h: 1204, compare: 1119, figma: 'figma-2-66.png',  objectPosition: '56.35% center' },
+  mobile: { w: 402,  h: 2140, compare: 2055, figma: 'figma-9-167.png', objectPosition: '20.15% center' }
 };
 const V = VARIANTS[WHICH];
 
@@ -54,7 +58,7 @@ const base = `http://localhost:${server.address().port}/`;
 
 const browser = await chromium.launch();
 const page = await browser.newPage({
-  viewport: { width: V.w, height: V.h },
+  viewport: { width: V.w, height: V.compare },
   hasTouch: WHICH === 'mobile',
   isMobile: WHICH === 'mobile'
 });
@@ -74,11 +78,14 @@ await page.evaluate((objectPosition) => {
 }, V.objectPosition);
 await page.waitForTimeout(600);
 
+/* Recorte a la franja comparable, no la página entera: con la tercera fila la
+   web es más alta que el boceto y una captura completa se compararía a escala
+   distinta. */
 const ownPath = join(ROOT, 'docs', `visual-own-${WHICH}.png`);
-await page.screenshot({ path: ownPath, fullPage: true });
+await page.screenshot({ path: ownPath, clip: { x: 0, y: 0, width: V.w, height: V.compare } });
 
 /* Diff en canvas: el PNG de Figma viene a escala 2, se reescala al viewport */
-const diff = await page.evaluate(async ({ own, figma, w, h }) => {
+const diff = await page.evaluate(async ({ own, figma, w, h, compare, ownHeight }) => {
   const load = (src) => new Promise((resolve, reject) => {
     const img = new Image();
     img.onload = () => resolve(img);
@@ -86,25 +93,27 @@ const diff = await page.evaluate(async ({ own, figma, w, h }) => {
     img.src = src;
   });
 
-  const draw = (img) => {
+  /* Cada imagen se dibuja a SU altura lógica y se recorta a la franja común,
+     para no deformar ninguna de las dos al compararlas. */
+  const draw = (img, fullHeight) => {
     const c = document.createElement('canvas');
-    c.width = w; c.height = h;
+    c.width = w; c.height = compare;
     const ctx = c.getContext('2d', { willReadFrequently: true });
-    ctx.drawImage(img, 0, 0, w, h);
-    return ctx.getImageData(0, 0, w, h);
+    ctx.drawImage(img, 0, 0, w, fullHeight);
+    return ctx.getImageData(0, 0, w, compare);
   };
 
   const [a, b] = await Promise.all([load(own), load(figma)]);
-  const pa = draw(a).data;
-  const pb = draw(b).data;
+  const pa = draw(a, ownHeight).data;
+  const pb = draw(b, h).data;
 
   const out = document.createElement('canvas');
-  out.width = w; out.height = h;
+  out.width = w; out.height = compare;
   const octx = out.getContext('2d');
-  const map = octx.createImageData(w, h);
+  const map = octx.createImageData(w, compare);
 
   let differing = 0;
-  const rows = new Array(h).fill(0);
+  const rows = new Array(compare).fill(0);
 
   for (let i = 0; i < pa.length; i += 4) {
     const delta = Math.abs(pa[i] - pb[i]) + Math.abs(pa[i + 1] - pb[i + 1]) + Math.abs(pa[i + 2] - pb[i + 2]);
@@ -126,7 +135,7 @@ const diff = await page.evaluate(async ({ own, figma, w, h }) => {
     if (hot && start === null) start = y;
     if (!hot && start !== null) { bands.push([start, y - 1]); start = null; }
   });
-  if (start !== null) bands.push([start, h - 1]);
+  if (start !== null) bands.push([start, compare - 1]);
 
   return {
     percent: +(differing / (pa.length / 4) * 100).toFixed(2),
@@ -137,7 +146,9 @@ const diff = await page.evaluate(async ({ own, figma, w, h }) => {
   own: `docs/visual-own-${WHICH}.png`,
   figma: `docs/${V.figma}`,
   w: V.w,
-  h: V.h
+  h: V.h,
+  compare: V.compare,
+  ownHeight: V.compare
 });
 
 await writeFile(
@@ -148,7 +159,7 @@ await writeFile(
 await browser.close();
 server.close();
 
-console.log(`${WHICH}: ${diff.percent}% de píxeles distintos`);
+console.log(`${WHICH}: ${diff.percent}% de píxeles distintos (franja 0–${V.compare}px)`);
 console.log('Bandas donde se concentra la diferencia (y inicio–fin):');
 diff.bands.forEach(([a, b]) => console.log(`  ${a}–${b}  (${b - a + 1}px de alto)`));
 console.log(`\ndocs/visual-diff-${WHICH}.png`);

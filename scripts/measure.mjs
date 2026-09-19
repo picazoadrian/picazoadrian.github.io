@@ -45,6 +45,8 @@ page.on('pageerror', (e) => errors.push(String(e)));
 page.on('console', (m) => { if (m.type() === 'error') errors.push(m.text()); });
 
 await page.goto(`http://localhost:${port}/`, { waitUntil: 'networkidle' });
+await page.waitForSelector('#loader', { state: 'detached', timeout: 8000 }).catch(() => {});
+await page.evaluate(() => document.fonts.ready);
 
 const measured = await page.evaluate(() => {
   const box = (sel) => {

@@ -8,10 +8,13 @@
  * Las referencias salen de docs/figma-spec.md, normalizadas restando el origen
  * del frame (71,47 en escritorio; -457,47 en móvil). Tolerancia: 0.5px.
  *
- * Desviación deliberada del boceto, pedida después de verlo publicado: "Madrid"
- * va CENTRADO (en Figma estaba 15px a la izquierda del centro), y tanto "Madrid"
- * como el rol bajan de 12px a 10px para igualar a la intro, lo que recoloca su
- * línea en y=25.5.
+ * Desviaciones deliberadas del boceto, pedidas después de verlo publicado:
+ *   - "Madrid" va CENTRADO (en Figma estaba 15px a la izquierda del centro).
+ *   - "Madrid" y el rol bajan de 12px a 10px para igualar a la intro, lo que
+ *     recoloca su línea en y=25.5.
+ *   - Hay TRES filas de piezas, no dos. El grid y la altura total ya no salen
+ *     de Figma: se derivan de su geometría (primera fila en 147, filas de 486,
+ *     pie de 85). Header, intro y pie siguen midiéndose contra el boceto.
  *
  * Los rótulos de texto se comparan por su borde ANCLADO (izquierdo si van a la
  * izquierda, derecho si van a la derecha): el ancho depende de la fuente que
@@ -41,8 +44,8 @@ const TYPES = {
 /* Referencias de Figma, ya normalizadas al origen del frame. */
 const EXPECTED = {
   pc: {
-    viewport: { width: 1512, height: 1204 },
-    frameHeight: 1204,
+    viewport: { width: 1512, height: 1690 },
+    frameHeight: 1690,
     checks: [
       ['.masthead',        { y: 0,    h: 51 }],
       ['.masthead__name',  { x: 16,   y: 24, h: 15 }],
@@ -50,20 +53,22 @@ const EXPECTED = {
       ['.masthead__role',  { right: 1496, y: 25.5, h: 12 }],
       ['.intro',           { y: 51,   h: 56 }],
       ['.intro__text',     { x: 16,   y: 67, h: 24 }],
-      ['.card:nth-child(1) .card__frame', { x: 0,   y: 147, w: 756, h: 486 }],
-      ['.card:nth-child(2) .card__frame', { x: 756, y: 147, w: 756, h: 486 }],
-      ['.card:nth-child(3) .card__frame', { x: 0,   y: 633, w: 756, h: 486 }],
-      ['.card:nth-child(4) .card__frame', { x: 756, y: 633, w: 756, h: 486 }],
-      ['.colophon',          { y: 1119, h: 85 }],
-      ['.colophon__contact', { x: 12,   y: 1136.5 }],
-      ['.colophon__top',     { right: 1500, y: 1136.5 }]
+      ['.card:nth-child(1) .card__frame', { x: 0,   y: 147,  w: 756, h: 486 }],
+      ['.card:nth-child(2) .card__frame', { x: 756, y: 147,  w: 756, h: 486 }],
+      ['.card:nth-child(3) .card__frame', { x: 0,   y: 633,  w: 756, h: 486 }],
+      ['.card:nth-child(4) .card__frame', { x: 756, y: 633,  w: 756, h: 486 }],
+      ['.card:nth-child(5) .card__frame', { x: 0,   y: 1119, w: 756, h: 486 }],
+      ['.card:nth-child(6) .card__frame', { x: 756, y: 1119, w: 756, h: 486 }],
+      ['.colophon',          { y: 1605, h: 85 }],
+      ['.colophon__contact', { x: 12,   y: 1622.5 }],
+      ['.colophon__top',     { right: 1500, y: 1622.5 }]
     ],
     /* La barra en hover ocupa los 36px inferiores de su card (en reposo está fuera). */
     hoverBar: { h: 36, bottom: 633 }
   },
   mobile: {
-    viewport: { width: 402, height: 2140 },
-    frameHeight: 2140,
+    viewport: { width: 402, height: 3112 },
+    frameHeight: 3112,
     checks: [
       ['.masthead',        { y: 0,  h: 47 }],
       ['.masthead__name',  { x: 12, y: 20, h: 15 }],
@@ -74,9 +79,11 @@ const EXPECTED = {
       ['.card:nth-child(2) .card__frame', { x: 0, y: 597,  w: 402, h: 486 }],
       ['.card:nth-child(3) .card__frame', { x: 0, y: 1083, w: 402, h: 486 }],
       ['.card:nth-child(4) .card__frame', { x: 0, y: 1569, w: 402, h: 486 }],
-      ['.colophon',          { y: 2055, h: 85 }],
-      ['.colophon__contact', { x: 12,   y: 2074 }],
-      ['.colophon__top',     { right: 390, y: 2074 }]
+      ['.card:nth-child(5) .card__frame', { x: 0, y: 2055, w: 402, h: 486 }],
+      ['.card:nth-child(6) .card__frame', { x: 0, y: 2541, w: 402, h: 486 }],
+      ['.colophon',          { y: 3027, h: 85 }],
+      ['.colophon__contact', { x: 12,   y: 3046 }],
+      ['.colophon__top',     { right: 390, y: 3046 }]
     ],
     hoverBar: null
   }

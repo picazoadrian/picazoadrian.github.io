@@ -10,9 +10,12 @@
  * Ejemplo con material real:
  *   { src: 'assets/media/01', type: 'video', title: 'SCUFFERS', subtitle: 'NEW YORK FW26' }
  *
- * El boceto tiene cuatro piezas: dos filas de dos en escritorio, una columna en móvil.
+ * Seis piezas: tres filas de dos en escritorio, una columna en móvil. (El boceto
+ * de Figma tenía cuatro; la tercera fila se añadió después.)
  */
 window.PROJECTS = [
+  { src: null, type: 'placeholder', title: 'SCUFFERS', subtitle: 'NEW YORK FW26' },
+  { src: null, type: 'placeholder', title: 'SCUFFERS', subtitle: 'NEW YORK FW26' },
   { src: null, type: 'placeholder', title: 'SCUFFERS', subtitle: 'NEW YORK FW26' },
   { src: null, type: 'placeholder', title: 'SCUFFERS', subtitle: 'NEW YORK FW26' },
   { src: null, type: 'placeholder', title: 'SCUFFERS', subtitle: 'NEW YORK FW26' },
