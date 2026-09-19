@@ -81,7 +81,11 @@ const server = createServer(async (req, res) => {
   } catch { res.writeHead(404).end('not found'); }
 });
 await new Promise((r) => server.listen(0, r));
-const url = `http://localhost:${server.address().port}/`;
+
+/* BASE_URL permite gatear el sitio YA PUBLICADO, no solo la copia local:
+   BASE_URL=https://picazoadrian.github.io node scripts/gate.mjs */
+const url = process.env.BASE_URL || `http://localhost:${server.address().port}/`;
+if (process.env.BASE_URL) console.log(`Gateando ${url}`);
 
 const only = process.argv[2];
 const browser = await chromium.launch();

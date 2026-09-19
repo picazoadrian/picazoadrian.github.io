@@ -1,6 +1,16 @@
 # Adrián Picazo — portfolio
 
+**https://picazoadrian.github.io**
+
 Sitio estático, sin build ni dependencias. Se publica en GitHub Pages desde la rama `main`.
+
+Réplica pixel-perfect de los bocetos de Figma, verificada con tres gates:
+
+```bash
+node scripts/gate.mjs        # geometría del DOM contra las medidas de Figma (0.5px)
+node scripts/visual.mjs pc   # diff visual contra el render del nodo
+node scripts/behaviour.mjs   # hover, toggle táctil y lightbox
+```
 
 ## Cómo se ve en local
 

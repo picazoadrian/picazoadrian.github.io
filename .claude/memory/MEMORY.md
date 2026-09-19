@@ -5,3 +5,4 @@
 
 - [Acceso al Figma del portfolio](project_figma_acceso.md) — qué cuenta abre el archivo, node-ids de los tres bocetos.
 - [Medidas del diseño](project_medidas_figma.md) — geometría real de los dos bocetos y las rarezas que hay que respetar.
+- [Despliegue](project_despliegue.md) — URL publicada, cuenta con la que se empuja y config de Pages.
