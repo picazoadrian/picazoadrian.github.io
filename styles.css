@@ -371,7 +371,6 @@ html.has-custom-cursor .cursor.is-outside { opacity: 0; }
     --masthead-h: 47px;
     --intro-block-h: 24px;
     --intro-offset: 0px;
-    --footer-text-top: 19px;
     --edge: 12px;
     --type-ui: 12px;             /* el rango de anchuras es estrecho: px fijos */
     --type-small: 10px;
