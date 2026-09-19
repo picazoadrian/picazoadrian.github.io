@@ -60,8 +60,8 @@ const EXPECTED = {
       ['.card:nth-child(5) .card__frame', { x: 0,   y: 1119, w: 756, h: 486 }],
       ['.card:nth-child(6) .card__frame', { x: 756, y: 1119, w: 756, h: 486 }],
       ['.colophon',          { y: 1605, h: 85 }],
-      ['.colophon__contact', { x: 12,   y: 1622.5 }],
-      ['.colophon__top',     { right: 1500, y: 1622.5 }]
+      ['.colophon__contact', { x: 12,   y: 1624, h: 12 }],
+      ['.colophon__top',     { right: 1500, y: 1624, h: 12 }]
     ],
     /* La barra en hover ocupa los 36px inferiores de su card (en reposo está fuera). */
     hoverBar: { h: 36, bottom: 633 }
@@ -82,8 +82,8 @@ const EXPECTED = {
       ['.card:nth-child(5) .card__frame', { x: 0, y: 2055, w: 402, h: 486 }],
       ['.card:nth-child(6) .card__frame', { x: 0, y: 2541, w: 402, h: 486 }],
       ['.colophon',          { y: 3027, h: 85 }],
-      ['.colophon__contact', { x: 12,   y: 3046 }],
-      ['.colophon__top',     { right: 390, y: 3046 }]
+      ['.colophon__contact', { x: 12,   y: 3046, h: 12 }],
+      ['.colophon__top',     { right: 390, y: 3046, h: 12 }]
     ],
     hoverBar: null
   }

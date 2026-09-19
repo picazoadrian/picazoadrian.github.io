@@ -35,7 +35,7 @@
   --intro-offset: 16px;          /* del inicio del bloque al top del texto */
   --grid-top-gap: 40px;          /* aire entre la intro y la primera fila */
   --footer-h: 85px;
-  --footer-text-top: 17.5px;
+  --footer-text-top: 19px;
 
   --bar-h: 36px;
   --bar-pad: 12px;
@@ -340,8 +340,8 @@ html.has-custom-cursor .cursor.is-outside { opacity: 0; }
   position: relative;
   height: var(--footer-h);
   color: var(--color-ink-strong);
-  font-size: var(--type-ui);
-  line-height: 15px;
+  font-size: var(--type-small);
+  line-height: 12px;
 }
 
 .colophon__contact,
@@ -387,7 +387,6 @@ html.has-custom-cursor .cursor.is-outside { opacity: 0; }
 
   .card__frame { aspect-ratio: 402 / 486; }
 
-  .colophon { font-size: var(--type-small); line-height: 12px; }
 }
 
 /* ---------- Accesibilidad ---------- */
