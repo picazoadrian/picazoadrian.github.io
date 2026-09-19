@@ -21,8 +21,9 @@
   --design-w: 1512;
 
   --color-bg: #ffffff;
-  --color-ink: #202020;          /* el nombre y el pie */
-  --color-para: #909090;         /* intro, "Madrid" y el rol */
+  --color-ink: #000000;          /* el nombre, "Madrid", el rol y el pie
+                                    (el boceto usaba #202020) */
+  --color-para: #909090;         /* solo la intro */
   --color-ink-strong: #000000;   /* footer y título de la barra */
   --color-muted: #b0b0b0;        /* subtítulo de la barra */
   --color-card-bg: #f4f4f4;      /* fondo de card mientras no hay media */
@@ -107,7 +108,6 @@ video { display: block; max-width: 100%; }
 .masthead__place,
 .masthead__role {
   top: 25.5px;
-  color: var(--color-para);
   font-size: var(--type-small);
   line-height: 12px;
 }
@@ -300,9 +300,7 @@ body.is-loading { overflow: hidden; }
 
 /* ---------- Cursor a medida ----------
    Un punto negro de 10px que sustituye al puntero del sistema, y que se vuelve
-   blanco sobre lo que se puede pulsar. El blanco lleva un contorno tenue: sin
-   él desaparecería sobre el fondo blanco de la página, que es justo donde está
-   el enlace de contacto.
+   blanco sobre lo que se puede pulsar.
 
    La clase la pone main.js, así que si el JS no llega a ejecutarse el puntero
    normal sigue ahí y la página no se queda sin cursor. */
@@ -327,10 +325,8 @@ html.has-custom-cursor .cursor {
   transition: background-color 150ms ease, border-color 150ms ease;
 }
 
-html.has-custom-cursor .cursor.is-interactive {
-  background: #ffffff;
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35);
-}
+/* Blanco liso, sin contorno: sobre fondo blanco se pierde, y así se ha pedido. */
+html.has-custom-cursor .cursor.is-interactive { background: #ffffff; }
 
 html.has-custom-cursor .cursor.is-outside { opacity: 0; }
 
