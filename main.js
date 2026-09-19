@@ -14,6 +14,38 @@
 
   var lastFocused = null;
 
+  /* ---------- Pantalla de carga ---------- */
+
+  function runLoader() {
+    var loader = document.getElementById('loader');
+    if (!loader) return;
+
+    /* Con movimiento reducido el velo está oculto por CSS: se retira sin más. */
+    if (reduceMotion.matches) {
+      loader.remove();
+      return;
+    }
+
+    document.body.classList.add('is-loading');
+
+    var square = loader.querySelector('.loader__square');
+    var done = false;
+
+    var finish = function () {
+      if (done) return;
+      done = true;
+      loader.classList.add('is-done');
+      document.body.classList.remove('is-loading');
+      loader.addEventListener('transitionend', function () { loader.remove(); }, { once: true });
+    };
+
+    square.addEventListener('animationend', finish, { once: true });
+
+    /* Red de seguridad: si la animación no llega a disparar su evento (pestaña
+       en segundo plano, por ejemplo), el velo se va igual y no bloquea la web. */
+    setTimeout(finish, 3000);
+  }
+
   /* ---------- Pintado del grid ---------- */
 
   function buildMedia(project, index) {
@@ -223,6 +255,7 @@
 
   /* ---------- Arranque ---------- */
 
+  runLoader();
   render();
   observeVideos();
 

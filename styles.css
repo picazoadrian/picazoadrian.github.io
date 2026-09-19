@@ -45,6 +45,10 @@
 
   --bar-duration: 600ms;
   --bar-ease: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --loader-size: 24px;
+  --loader-spin: 1400ms;   /* dos vueltas completas */
+  --loader-fade: 400ms;
 }
 
 *,
@@ -75,10 +79,7 @@ video { display: block; max-width: 100%; }
   padding: 8px 12px;
 }
 
-/* ---------- Cabecera ----------
-   Los tres rótulos van posicionados por su x real de Figma (16, 720.5 y 1365 de
-   1512): "Madrid" NO está centrado en el diseño, así que un space-between lo
-   movería 15px y rompería el gate. */
+/* ---------- Cabecera ---------- */
 
 .masthead {
   position: relative;
@@ -91,16 +92,30 @@ video { display: block; max-width: 100%; }
 .masthead__place,
 .masthead__role {
   position: absolute;
-  top: 24px;
   white-space: nowrap;
 }
 
 .masthead__name {
+  top: 24px;
   left: var(--edge);
   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
-.masthead__place { left: calc(720.5 / var(--design-w) * 100%); }
+/* "Madrid" y el rol comparten tamaño y color con la intro. Al bajar de 12px a
+   10px se recentran ópticamente sobre la línea del nombre: 24 + (15-12)/2. Es el
+   mismo cálculo que usa el boceto móvil (nombre en 20, rol en 21.5). */
+.masthead__place,
+.masthead__role {
+  top: 25.5px;
+  font-size: var(--type-small);
+  line-height: 12px;
+}
+
+/* Centrado real, a diferencia del boceto, donde estaba 15px a la izquierda */
+.masthead__place {
+  left: 50%;
+  transform: translateX(-50%);
+}
 
 .masthead__role { right: var(--edge); }
 
@@ -187,6 +202,39 @@ video { display: block; max-width: 100%; }
 /* Táctil: la sube y la baja el toque, vía clase desde main.js */
 .card.is-open .card__bar { transform: translateY(0); }
 
+/* ---------- Pantalla de carga ----------
+   Un cuadrado que da dos vueltas con la misma curva que la barra del hover:
+   sale disparado y frena en seco. Al terminar, el velo se desvanece y main.js
+   retira el nodo. */
+
+.loader {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-bg);
+  transition: opacity var(--loader-fade) ease;
+}
+
+.loader__square {
+  width: var(--loader-size);
+  height: var(--loader-size);
+  background: var(--color-ink-strong);
+  animation: loader-spin var(--loader-spin) var(--bar-ease) forwards;
+}
+
+@keyframes loader-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(720deg); }
+}
+
+.loader.is-done { opacity: 0; pointer-events: none; }
+
+/* Mientras carga no se hace scroll por detrás del velo */
+body.is-loading { overflow: hidden; }
+
 /* ---------- Lightbox ---------- */
 
 .lightbox {
@@ -243,7 +291,8 @@ video { display: block; max-width: 100%; }
 
 .colophon__contact {
   left: var(--edge-tight);
-  cursor: default;               /* sin enlace hasta tener la URL de LinkedIn */
+  color: inherit;
+  text-decoration: none;
 }
 
 .colophon__top {
@@ -270,13 +319,9 @@ video { display: block; max-width: 100%; }
   .masthead__role {
     top: 21.5px;
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    font-size: var(--type-small);
-    line-height: 12px;
   }
 
   .masthead__place { display: none; }   /* no existe en el boceto móvil */
-
-  .intro { color: var(--color-ink-strong); }
 
   .grid { grid-template-columns: 1fr; }
 
@@ -288,6 +333,8 @@ video { display: block; max-width: 100%; }
 /* ---------- Accesibilidad ---------- */
 
 @media (prefers-reduced-motion: reduce) {
+  .loader { display: none; }
+
   * {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;

@@ -29,6 +29,12 @@ const VARIANTS = {
 };
 const V = VARIANTS[WHICH];
 
+/* El velo de carga cubre la página ~1.8s: hay que dejarlo terminar antes de
+   medir o de simular un hover, o el puntero choca contra él. */
+async function waitForLoader(page) {
+  await page.waitForSelector('#loader', { state: 'detached', timeout: 8000 }).catch(() => {});
+}
+
 const TYPES = {
   '.html': 'text/html', '.css': 'text/css', '.js': 'text/javascript',
   '.svg': 'image/svg+xml', '.woff2': 'font/woff2', '.png': 'image/png'
@@ -54,6 +60,7 @@ const page = await browser.newPage({
 });
 await page.goto(base, { waitUntil: 'networkidle' });
 await page.evaluate(() => document.fonts.ready);
+await waitForLoader(page);
 
 /* Sustituye los placeholders por la foto del boceto, con el encuadre de Figma */
 await page.evaluate((objectPosition) => {

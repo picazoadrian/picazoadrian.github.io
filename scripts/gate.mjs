@@ -8,6 +8,11 @@
  * Las referencias salen de docs/figma-spec.md, normalizadas restando el origen
  * del frame (71,47 en escritorio; -457,47 en móvil). Tolerancia: 0.5px.
  *
+ * Desviación deliberada del boceto, pedida después de verlo publicado: "Madrid"
+ * va CENTRADO (en Figma estaba 15px a la izquierda del centro), y tanto "Madrid"
+ * como el rol bajan de 12px a 10px para igualar a la intro, lo que recoloca su
+ * línea en y=25.5.
+ *
  * Los rótulos de texto se comparan por su borde ANCLADO (izquierdo si van a la
  * izquierda, derecho si van a la derecha): el ancho depende de la fuente que
  * resuelva el navegador y no es una medida que podamos exigir.
@@ -20,6 +25,12 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
 const TOL = 0.5;
+
+/* El velo de carga cubre la página ~1.8s: hay que dejarlo terminar antes de
+   medir o de simular un hover, o el puntero choca contra él. */
+async function waitForLoader(page) {
+  await page.waitForSelector('#loader', { state: 'detached', timeout: 8000 }).catch(() => {});
+}
 
 const TYPES = {
   '.html': 'text/html', '.css': 'text/css', '.js': 'text/javascript',
@@ -35,8 +46,8 @@ const EXPECTED = {
     checks: [
       ['.masthead',        { y: 0,    h: 51 }],
       ['.masthead__name',  { x: 16,   y: 24, h: 15 }],
-      ['.masthead__place', { x: 720.5, y: 24 }],
-      ['.masthead__role',  { right: 1496, y: 24 }],
+      ['.masthead__place', { centerX: 756, y: 25.5, h: 12 }],
+      ['.masthead__role',  { right: 1496, y: 25.5, h: 12 }],
       ['.intro',           { y: 51,   h: 56 }],
       ['.intro__text',     { x: 16,   y: 67, h: 24 }],
       ['.card:nth-child(1) .card__frame', { x: 0,   y: 147, w: 756, h: 486 }],
@@ -102,6 +113,7 @@ for (const [name, spec] of Object.entries(EXPECTED)) {
   const page = await context.newPage();
   await page.goto(url, { waitUntil: 'networkidle' });
   await page.evaluate(() => document.fonts.ready);
+  await waitForLoader(page);
 
   console.log(`\n── ${name}  ${spec.viewport.width}×${spec.viewport.height} ──`);
 
@@ -110,7 +122,10 @@ for (const [name, spec] of Object.entries(EXPECTED)) {
       const el = document.querySelector(sel);
       if (!el) return null;
       const r = el.getBoundingClientRect();
-      return { x: r.x, y: r.y + window.scrollY, w: r.width, h: r.height, right: r.right };
+      return {
+        x: r.x, y: r.y + window.scrollY, w: r.width, h: r.height,
+        right: r.right, centerX: r.x + r.width / 2
+      };
     }, selector);
 
     if (!got) {

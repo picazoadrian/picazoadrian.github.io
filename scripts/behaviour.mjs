@@ -11,6 +11,12 @@ import { extname, join, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
+/* El velo de carga cubre la página ~1.8s: hay que dejarlo terminar antes de
+   medir o de simular un hover, o el puntero choca contra él. */
+async function waitForLoader(page) {
+  await page.waitForSelector('#loader', { state: 'detached', timeout: 8000 }).catch(() => {});
+}
+
 const TYPES = { '.html': 'text/html', '.css': 'text/css', '.js': 'text/javascript', '.svg': 'image/svg+xml' };
 
 const server = createServer(async (req, res) => {
@@ -33,7 +39,39 @@ const browser = await chromium.launch();
 /* --- Escritorio: puntero fino --- */
 const desktop = await browser.newContext({ viewport: { width: 1512, height: 982 }, hasTouch: false });
 const page = await desktop.newPage();
-await page.goto(url, { waitUntil: 'networkidle' });
+/* --- Pantalla de carga: se mide ANTES de esperar a que se retire --- */
+await page.goto(url, { waitUntil: 'domcontentloaded' });
+
+const loaderAtStart = await page.evaluate(() => {
+  const el = document.getElementById('loader');
+  if (!el) return null;
+  const sq = el.querySelector('.loader__square');
+  const s = getComputedStyle(sq);
+  const box = sq.getBoundingClientRect();
+  return {
+    covers: getComputedStyle(el).position === 'fixed',
+    animation: s.animationName + ' ' + s.animationDuration + ' ' + s.animationTimingFunction,
+    centered: Math.abs((box.x + box.width / 2) - window.innerWidth / 2) < 1
+  };
+});
+
+check('el velo de carga cubre la pantalla', !!loaderAtStart && loaderAtStart.covers);
+check('el cuadrado está centrado', !!loaderAtStart && loaderAtStart.centered);
+check('gira con la curva del hover', !!loaderAtStart &&
+  loaderAtStart.animation.includes('loader-spin') &&
+  loaderAtStart.animation.includes('cubic-bezier(0.16, 1, 0.3, 1)'),
+  loaderAtStart ? loaderAtStart.animation : '');
+
+await waitForLoader(page);
+check('el velo se retira solo', await page.locator('#loader').count() === 0);
+
+const contact = await page.evaluate(() => {
+  const a = document.querySelector('.colophon__contact');
+  return { tag: a.tagName, href: a.getAttribute('href'), rel: a.getAttribute('rel') };
+});
+check('Contact me enlaza a LinkedIn',
+  contact.tag === 'A' && contact.href === 'https://www.linkedin.com/in/adrian-picazo/' && contact.rel === 'noopener',
+  contact.href || '');
 
 const barY = async () => page.evaluate(() => {
   const bar = document.querySelector('.card__bar');
@@ -80,6 +118,7 @@ const touch = await browser.newContext({
 });
 const mobile = await touch.newPage();
 await mobile.goto(url, { waitUntil: 'networkidle' });
+await waitForLoader(mobile);
 
 await mobile.tap('.card__frame');
 await mobile.waitForTimeout(800);
