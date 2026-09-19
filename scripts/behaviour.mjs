@@ -1,0 +1,109 @@
+/**
+ * Comprueba el comportamiento, no el pixel: hover en escritorio, toggle táctil,
+ * lightbox y scroll. Complementa a measure.mjs.
+ *
+ *   node scripts/behaviour.mjs
+ */
+import { chromium } from '/Users/hugorodriguezortega/Projects/clients/archive/node_modules/playwright/index.mjs';
+import { createServer } from 'node:http';
+import { readFile } from 'node:fs/promises';
+import { extname, join, normalize } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const ROOT = fileURLToPath(new URL('..', import.meta.url));
+const TYPES = { '.html': 'text/html', '.css': 'text/css', '.js': 'text/javascript', '.svg': 'image/svg+xml' };
+
+const server = createServer(async (req, res) => {
+  const path = normalize(decodeURIComponent(req.url.split('?')[0]));
+  const file = join(ROOT, path === '/' ? 'index.html' : path);
+  try {
+    const body = await readFile(file);
+    res.writeHead(200, { 'content-type': TYPES[extname(file)] || 'application/octet-stream' });
+    res.end(body);
+  } catch { res.writeHead(404).end('not found'); }
+});
+await new Promise((r) => server.listen(0, r));
+const url = `http://localhost:${server.address().port}/`;
+
+const results = [];
+const check = (name, pass, detail = '') => results.push({ name, pass, detail });
+
+const browser = await chromium.launch();
+
+/* --- Escritorio: puntero fino --- */
+const desktop = await browser.newContext({ viewport: { width: 1512, height: 982 }, hasTouch: false });
+const page = await desktop.newPage();
+await page.goto(url, { waitUntil: 'networkidle' });
+
+const barY = async () => page.evaluate(() => {
+  const bar = document.querySelector('.card__bar');
+  const frame = document.querySelector('.card__frame');
+  return bar.getBoundingClientRect().top - frame.getBoundingClientRect().bottom;
+});
+
+const restingOffset = await barY();
+check('barra oculta en reposo', restingOffset > -1, `offset ${restingOffset.toFixed(1)}px`);
+
+await page.hover('.card__frame');
+await page.waitForTimeout(900);
+const hoverOffset = await barY();
+check('barra sube en hover', hoverOffset < -30, `offset ${hoverOffset.toFixed(1)}px`);
+
+await page.mouse.move(5, 5);
+await page.waitForTimeout(900);
+const backOffset = await barY();
+check('barra vuelve al salir', backOffset > -1, `offset ${backOffset.toFixed(1)}px`);
+
+const easing = await page.evaluate(() => {
+  const s = getComputedStyle(document.querySelector('.card__bar'));
+  return s.transitionDuration + ' ' + s.transitionTimingFunction;
+});
+check('curva 600ms expo-out', easing.includes('0.6s') && easing.includes('0.16, 1, 0.3, 1'), easing);
+
+await page.click('.card__frame');
+await page.waitForTimeout(200);
+check('lightbox abre en escritorio', !(await page.locator('#lightbox').isHidden()));
+
+await page.keyboard.press('Escape');
+await page.waitForTimeout(200);
+check('Escape cierra el lightbox', await page.locator('#lightbox').isHidden());
+
+await page.click('.card__frame');
+await page.waitForTimeout(150);
+await page.click('#lightbox', { position: { x: 5, y: 5 } });
+await page.waitForTimeout(200);
+check('clic fuera cierra el lightbox', await page.locator('#lightbox').isHidden());
+
+/* --- Táctil: sin puntero fino --- */
+const touch = await browser.newContext({
+  viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true
+});
+const mobile = await touch.newPage();
+await mobile.goto(url, { waitUntil: 'networkidle' });
+
+await mobile.tap('.card__frame');
+await mobile.waitForTimeout(800);
+check('1er toque abre la barra', await mobile.locator('.card').first().evaluate((el) => el.classList.contains('is-open')));
+
+await mobile.tap('.card__frame');
+await mobile.waitForTimeout(800);
+check('2º toque la cierra', !(await mobile.locator('.card').first().evaluate((el) => el.classList.contains('is-open'))));
+
+await mobile.locator('.card').nth(0).tap();
+await mobile.locator('.card').nth(1).tap();
+await mobile.waitForTimeout(400);
+const openCount = await mobile.locator('.card.is-open').count();
+check('solo una barra abierta a la vez', openCount === 1, `${openCount} abiertas`);
+
+check('sin lightbox en táctil', await mobile.locator('#lightbox').isHidden());
+
+await browser.close();
+server.close();
+
+let failed = 0;
+for (const r of results) {
+  if (!r.pass) failed++;
+  console.log(`${r.pass ? 'OK  ' : 'FALLA'}  ${r.name}${r.detail ? '  (' + r.detail + ')' : ''}`);
+}
+console.log(`\n${results.length - failed}/${results.length} comprobaciones pasan`);
+process.exit(failed ? 1 : 0);
