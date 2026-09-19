@@ -45,6 +45,8 @@
     var placeholder = document.createElement('div');
     placeholder.className = 'card__media card__media--placeholder';
     placeholder.textContent = String(index + 1).padStart(2, '0');
+    /* Figma alterna dos grises entre cards; se respeta para que el diff visual cuadre. */
+    placeholder.style.background = index % 2 ? '#ededed' : '#f4f4f4';
     return placeholder;
   }
 
@@ -59,10 +61,17 @@
 
     var bar = document.createElement('div');
     bar.className = 'card__bar';
-    bar.innerHTML =
-      '<span class="card__title"></span><span class="card__subtitle"></span>';
-    bar.querySelector('.card__title').textContent = project.title || '';
-    bar.querySelector('.card__subtitle').textContent = project.subtitle || '';
+
+    var title = document.createElement('span');
+    title.className = 'card__title';
+    title.textContent = project.title || '';
+
+    var subtitle = document.createElement('span');
+    subtitle.className = 'card__subtitle';
+    subtitle.textContent = project.subtitle || '';
+
+    bar.appendChild(title);
+    bar.appendChild(subtitle);
 
     frame.appendChild(bar);
     item.appendChild(frame);

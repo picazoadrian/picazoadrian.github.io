@@ -5,39 +5,41 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>Adrián Picazo</title>
-  <meta name="description" content="Selected work by Adrián Picazo.">
+  <meta name="description" content="Cinematic Kid from Madrid helping brands look like they mean it. Director, editor and colorist.">
 
   <meta property="og:type" content="website">
   <meta property="og:title" content="Adrián Picazo">
-  <meta property="og:description" content="Selected work by Adrián Picazo.">
+  <meta property="og:description" content="Cinematic Kid from Madrid helping brands look like they mean it.">
   <meta property="og:image" content="assets/og.jpg">
   <meta name="twitter:card" content="summary_large_image">
 
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="assets/fonts/inter-latin-var.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="styles.css">
 </head>
-<body>
+<body id="top">
   <a class="skip-link" href="#work">Skip to work</a>
 
-  <header class="site-header" id="top">
-    <h1 class="site-header__name">Adrián Picazo</h1>
-    <p class="site-header__intro">
-      <!-- Copy exacto pendiente de leer del nodo de Figma -->
-    </p>
+  <header class="masthead">
+    <span class="masthead__name">ADRIÁN PICAZO®</span>
+    <span class="masthead__place">Madrid</span>
+    <span class="masthead__role">Director | Editor | Color</span>
   </header>
 
   <main>
+    <p class="intro"><span class="intro__text">Cinematic Kid from Madrid helping<br>brands look like they mean it.</span></p>
+
     <!-- El grid lo pinta main.js a partir de projects.js -->
     <ul class="grid" id="work" aria-label="Selected work"></ul>
   </main>
 
-  <footer class="site-footer">
+  <footer class="colophon">
     <!-- Sin href hasta tener la URL de LinkedIn: un enlace sin destino no es un enlace -->
-    <span class="site-footer__contact" data-contact>Contact me</span>
-    <a class="site-footer__top" href="#top" data-scroll-top>Adrián Picazo</a>
+    <span class="colophon__contact" data-contact>Contact me&#8592;</span>
+    <a class="colophon__top" href="#top" data-scroll-top>Adrián Picazo®</a>
   </footer>
 
-  <!-- Lightbox: solo se activa donde hay hover real (desktop) -->
+  <!-- Lightbox: solo se activa donde hay hover real (escritorio) -->
   <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Project preview" hidden>
     <button class="lightbox__close" type="button" aria-label="Close">&times;</button>
     <div class="lightbox__stage"></div>

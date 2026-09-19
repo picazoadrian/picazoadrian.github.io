@@ -18,8 +18,8 @@ const LABEL = process.argv[4] || `${WIDTH}x${HEIGHT}`;
 
 const TYPES = {
   '.html': 'text/html', '.css': 'text/css', '.js': 'text/javascript',
-  '.svg': 'image/svg+xml', '.webp': 'image/webp', '.webm': 'video/webm',
-  '.mp4': 'video/mp4', '.jpg': 'image/jpeg', '.png': 'image/png'
+  '.svg': 'image/svg+xml', '.woff2': 'font/woff2', '.webp': 'image/webp',
+  '.webm': 'video/webm', '.mp4': 'video/mp4', '.jpg': 'image/jpeg', '.png': 'image/png'
 };
 
 const server = createServer(async (req, res) => {
