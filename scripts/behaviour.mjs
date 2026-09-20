@@ -108,11 +108,13 @@ await page.mouse.move(700, 500);
 await page.mouse.wheel(0, 600);
 await page.waitForTimeout(60);
 const justAfterWheel = await page.evaluate(() => window.scrollY);
-await page.waitForTimeout(1800);
+await page.waitForTimeout(2800);
 const settled = await page.evaluate(() => window.scrollY);
 
-check('el scroll no salta de golpe', justAfterWheel < 200, `${justAfterWheel.toFixed(0)}px a los 60ms`);
-check('el scroll llega a su destino', Math.abs(settled - 600 * 0.9) < 12, `${settled.toFixed(0)}px al asentarse`);
+/* 600 de rueda × SCROLL_STEP. Si se recalibra la inercia, este número cambia. */
+const expected = 600 * 0.8;
+check('el scroll no salta de golpe', justAfterWheel < 160, `${justAfterWheel.toFixed(0)}px a los 60ms`);
+check('el scroll llega a su destino', Math.abs(settled - expected) < 12, `${settled.toFixed(0)}px de ${expected} al asentarse`);
 
 /* Con el lightbox abierto la página no debe moverse */
 await page.evaluate(() => window.scrollTo(0, 0));

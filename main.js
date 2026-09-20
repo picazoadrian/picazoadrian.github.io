@@ -23,8 +23,8 @@
      Solo en escritorio: el scroll táctil ya tiene su propia inercia, mucho
      mejor que cualquier imitación, y pisarla se nota enseguida. */
 
-  var SCROLL_EASE = 0.06;
-  var SCROLL_STEP = 0.9;
+  var SCROLL_EASE = 0.038;
+  var SCROLL_STEP = 0.8;
 
   var scrollTarget = 0;
   var scrollCurrent = 0;
