@@ -14,6 +14,78 @@
 
   var lastFocused = null;
 
+  /* ---------- Scroll con inercia ----------
+     La rueda no mueve la página directamente: alimenta un objetivo al que la
+     posición real se acerca poco a poco en cada frame. De ahí la sensación de
+     peso. `SCROLL_EASE` es la lentitud (cuanto más bajo, más lento) y
+     `SCROLL_STEP` cuánto avanza cada golpe de rueda.
+
+     Solo en escritorio: el scroll táctil ya tiene su propia inercia, mucho
+     mejor que cualquier imitación, y pisarla se nota enseguida. */
+
+  var SCROLL_EASE = 0.06;
+  var SCROLL_STEP = 0.9;
+
+  var scrollTarget = 0;
+  var scrollCurrent = 0;
+  var scrollRunning = false;
+  var smoothScroll = false;
+
+  function maxScroll() {
+    return Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+  }
+
+  function scrollFrame() {
+    scrollCurrent += (scrollTarget - scrollCurrent) * SCROLL_EASE;
+
+    if (Math.abs(scrollTarget - scrollCurrent) < 0.4) {
+      scrollCurrent = scrollTarget;
+      scrollRunning = false;
+    }
+
+    window.scrollTo(0, scrollCurrent);
+    if (scrollRunning) requestAnimationFrame(scrollFrame);
+  }
+
+  function pushScroll(to) {
+    scrollTarget = Math.max(0, Math.min(to, maxScroll()));
+    if (!scrollRunning) {
+      scrollRunning = true;
+      requestAnimationFrame(scrollFrame);
+    }
+  }
+
+  function runSmoothScroll() {
+    if (!finePointer.matches || reduceMotion.matches) return;
+
+    smoothScroll = true;
+    scrollTarget = scrollCurrent = window.scrollY;
+
+    window.addEventListener('wheel', function (event) {
+      /* Con el lightbox abierto la página no se mueve. */
+      if (document.body.classList.contains('is-locked')) return;
+
+      event.preventDefault();
+
+      /* Algunas ruedas informan en líneas o en páginas, no en píxeles. */
+      var delta = event.deltaY;
+      if (event.deltaMode === 1) delta *= 16;
+      else if (event.deltaMode === 2) delta *= window.innerHeight;
+
+      pushScroll(scrollTarget + delta * SCROLL_STEP);
+    }, { passive: false });
+
+    /* Si la página se mueve por otra vía (teclado, barra de scroll, un ancla),
+       el objetivo se resincroniza para no dar un tirón en el siguiente golpe. */
+    window.addEventListener('scroll', function () {
+      if (!scrollRunning) scrollTarget = scrollCurrent = window.scrollY;
+    }, { passive: true });
+
+    window.addEventListener('resize', function () {
+      pushScroll(scrollTarget);
+    });
+  }
+
   /* ---------- Cursor a medida ---------- */
 
   function runCursor() {
@@ -288,6 +360,12 @@
 
   function onTopClick(event) {
     event.preventDefault();
+
+    if (smoothScroll) {
+      pushScroll(0);
+      return;
+    }
+
     window.scrollTo({
       top: 0,
       behavior: reduceMotion.matches ? 'auto' : 'smooth'
@@ -297,6 +375,7 @@
   /* ---------- Arranque ---------- */
 
   runLoader();
+  runSmoothScroll();
   runCursor();
   render();
   observeVideos();

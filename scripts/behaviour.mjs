@@ -100,6 +100,33 @@ await page.waitForTimeout(120);
 const overNothing = await page.evaluate(() => document.getElementById('cursor').classList.contains('is-interactive'));
 check('se vuelve blanco sobre lo pulsable', overCard && !overNothing, `card:${overCard} vacío:${overNothing}`);
 
+/* --- Scroll con inercia --- */
+await page.evaluate(() => window.scrollTo(0, 0));
+await page.waitForTimeout(400);
+
+await page.mouse.move(700, 500);
+await page.mouse.wheel(0, 600);
+await page.waitForTimeout(60);
+const justAfterWheel = await page.evaluate(() => window.scrollY);
+await page.waitForTimeout(1800);
+const settled = await page.evaluate(() => window.scrollY);
+
+check('el scroll no salta de golpe', justAfterWheel < 200, `${justAfterWheel.toFixed(0)}px a los 60ms`);
+check('el scroll llega a su destino', Math.abs(settled - 600 * 0.9) < 12, `${settled.toFixed(0)}px al asentarse`);
+
+/* Con el lightbox abierto la página no debe moverse */
+await page.evaluate(() => window.scrollTo(0, 0));
+await page.waitForTimeout(600);
+await page.click('.card:nth-child(1) .card__frame');
+await page.waitForTimeout(300);
+const before = await page.evaluate(() => window.scrollY);
+await page.mouse.wheel(0, 500);
+await page.waitForTimeout(700);
+const after = await page.evaluate(() => window.scrollY);
+check('el lightbox bloquea el scroll', Math.abs(after - before) < 2, `${before.toFixed(0)} → ${after.toFixed(0)}`);
+await page.keyboard.press('Escape');
+await page.waitForTimeout(300);
+
 const closeIcon = await page.evaluate(() => {
   const svg = document.querySelector('.lightbox__close svg');
   if (!svg) return null;
