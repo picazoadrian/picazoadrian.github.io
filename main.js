@@ -177,7 +177,7 @@
       video.dataset.mp4 = project.src + '.mp4';
       /* El lightbox no reutiliza el 1080p del grid: carga aparte la versión a
          resolución completa, que solo se descarga si alguien abre la pieza. */
-      video.dataset.full = project.src + '-4k.mp4';
+      video.dataset.full = project.src + '-full.mp4';
       return video;
     }
 

@@ -18,6 +18,6 @@ window.PROJECTS = [
   { src: 'assets/media/02', type: 'video', title: 'SCUFFERS', subtitle: 'NEW YORK FW26' },
   { src: 'assets/media/03', type: 'video', title: 'SCUFFERS', subtitle: 'NEW YORK FW26' },
   { src: 'assets/media/04', type: 'video', title: 'SCUFFERS', subtitle: 'NEW YORK FW26' },
-  { src: null, type: 'placeholder', title: 'SCUFFERS', subtitle: 'NEW YORK FW26' },
+  { src: 'assets/media/05', type: 'video', title: 'SCUFFERS', subtitle: 'NEW YORK FW26' },
   { src: null, type: 'placeholder', title: 'SCUFFERS', subtitle: 'NEW YORK FW26' },
 ];
