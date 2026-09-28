@@ -21,7 +21,7 @@
   --design-w: 1512;
 
   --color-bg: #ffffff;
-  --color-ink: #000000;          /* el nombre, "Madrid", el rol y el pie
+  --color-ink: #000000;          /* el nombre, el rol y el pie
                                     (el boceto usaba #202020) */
   --color-para: #909090;         /* solo la intro */
   --color-ink-strong: #000000;   /* footer y título de la barra */
@@ -90,7 +90,6 @@ video { display: block; max-width: 100%; }
 }
 
 .masthead__name,
-.masthead__place,
 .masthead__role {
   position: absolute;
   white-space: nowrap;
@@ -102,20 +101,13 @@ video { display: block; max-width: 100%; }
   text-transform: uppercase;
 }
 
-/* "Madrid" y el rol comparten tamaño y color con la intro. Al bajar de 12px a
-   10px se recentran ópticamente sobre la línea del nombre: 24 + (15-12)/2. Es el
-   mismo cálculo que usa el boceto móvil (nombre en 20, rol en 21.5). */
-.masthead__place,
+/* El rol comparte tamaño y color con la intro. Al bajar de 12px a 10px se
+   recentra ópticamente sobre la línea del nombre: 24 + (15-12)/2. Es el mismo
+   cálculo que usa el boceto móvil (nombre en 20, rol en 21.5). */
 .masthead__role {
   top: 25.5px;
   font-size: var(--type-small);
   line-height: 12px;
-}
-
-/* Centrado real, a diferencia del boceto, donde estaba 15px a la izquierda */
-.masthead__place {
-  left: 50%;
-  transform: translateX(-50%);
 }
 
 .masthead__role { right: var(--edge); }
@@ -375,8 +367,6 @@ html.has-custom-cursor .cursor.is-outside { opacity: 0; }
   .masthead__name { top: 20px; }
 
   .masthead__role { top: 21.5px; }
-
-  .masthead__place { display: none; }   /* no existe en el boceto móvil */
 
   .grid { grid-template-columns: 1fr; }
 

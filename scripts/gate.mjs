@@ -9,9 +9,9 @@
  * del frame (71,47 en escritorio; -457,47 en móvil). Tolerancia: 0.5px.
  *
  * Desviaciones deliberadas del boceto, pedidas después de verlo publicado:
- *   - "Madrid" va CENTRADO (en Figma estaba 15px a la izquierda del centro).
- *   - "Madrid" y el rol bajan de 12px a 10px para igualar a la intro, lo que
- *     recoloca su línea en y=25.5.
+ *   - "Madrid" se ha quitado de la cabecera (en Figma iba en el centro).
+ *   - El rol baja de 12px a 10px para igualar a la intro, lo que recoloca su
+ *     línea en y=25.5.
  *   - Hay TRES filas de piezas, no dos. El grid y la altura total ya no salen
  *     de Figma: se derivan de su geometría (primera fila en 147, filas de 486,
  *     pie de 85). Header, intro y pie siguen midiéndose contra el boceto.
@@ -49,7 +49,6 @@ const EXPECTED = {
     checks: [
       ['.masthead',        { y: 0,    h: 51 }],
       ['.masthead__name',  { x: 16,   y: 24, h: 15 }],
-      ['.masthead__place', { centerX: 756, y: 25.5, h: 12 }],
       ['.masthead__role',  { right: 1496, y: 25.5, h: 12 }],
       ['.intro',           { y: 51,   h: 56 }],
       ['.intro__text',     { x: 16,   y: 67, h: 24 }],
