@@ -78,7 +78,11 @@
     /* Si la página se mueve por otra vía (teclado, barra de scroll, un ancla),
        el objetivo se resincroniza para no dar un tirón en el siguiente golpe. */
     window.addEventListener('scroll', function () {
-      if (!scrollRunning) scrollTarget = scrollCurrent = window.scrollY;
+      /* Con la inercia en marcha, un salto que no cuadra con el frame propio viene
+         de fuera: manda ese y la inercia se retira en vez de pisarlo. */
+      if (scrollRunning && Math.abs(window.scrollY - scrollCurrent) <= 2) return;
+      scrollRunning = false;
+      scrollTarget = scrollCurrent = window.scrollY;
     }, { passive: true });
 
     window.addEventListener('resize', function () {
@@ -171,6 +175,9 @@
          de entrada, el navegador empieza a descargar las piezas de toda la página. */
       video.dataset.webm = project.src + '.webm';
       video.dataset.mp4 = project.src + '.mp4';
+      /* El lightbox no reutiliza el 1080p del grid: carga aparte la versión a
+         resolución completa, que solo se descarga si alguien abre la pieza. */
+      video.dataset.full = project.src + '-4k.mp4';
       return video;
     }
 
@@ -235,14 +242,15 @@
     if (video.dataset.loaded === '1') return;
     video.dataset.loaded = '1';
 
-    var webm = document.createElement('source');
-    webm.src = video.dataset.webm;
-    webm.type = 'video/webm';
+    if (video.dataset.webm) {
+      var webm = document.createElement('source');
+      webm.src = video.dataset.webm;
+      webm.type = 'video/webm';
+      video.appendChild(webm);
+    }
     var mp4 = document.createElement('source');
     mp4.src = video.dataset.mp4;
     mp4.type = 'video/mp4';
-
-    video.appendChild(webm);
     video.appendChild(mp4);
     video.load();
 
@@ -311,12 +319,23 @@
     var clone;
 
     if (source && source.tagName === 'VIDEO') {
-      clone = source.cloneNode(true);
+      /* Clon sin hijos: las <source> 1080p del grid no deben colarse en el lightbox. */
+      clone = source.cloneNode(false);
       clone.controls = false;
       clone.muted = true;
       clone.loop = true;
       clone.playsInline = true;
+      clone.preload = 'auto';
       clone.dataset.loaded = '';
+      if (source.dataset.full) {
+        clone.dataset.webm = '';
+        clone.dataset.mp4 = source.dataset.full;
+      }
+      /* Arranca donde iba el grid, para que abrir la pieza no la rebobine. */
+      var startAt = source.currentTime || 0;
+      clone.addEventListener('loadedmetadata', function () {
+        if (startAt && startAt < clone.duration) clone.currentTime = startAt;
+      }, { once: true });
       startVideo(clone);
     } else {
       clone = source ? source.cloneNode(true) : document.createElement('div');

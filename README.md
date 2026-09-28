@@ -29,7 +29,8 @@ Abrir el `index.html` con doble clic también funciona: no hay `fetch` ni módul
    ./scripts/encode.sh ~/ruta/al/video.mov 01
    ```
 
-   Deja `assets/media/01.webm`, `01.mp4` y `01.webp` (poster).
+   Deja `assets/media/01.webm` y `01.mp4` (1080p, grid), `01-4k.mp4` (resolución
+   completa, solo la carga el lightbox) y `01.webp` (poster).
 
 2. Añadir una línea en `projects.js`:
 
