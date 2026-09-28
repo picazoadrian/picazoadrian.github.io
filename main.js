@@ -137,9 +137,11 @@
 
   var LOADER_MAX_WAIT = 8000;
 
-  /* Listos = ninguna card visible sigue con el indicador de carga puesto. */
+  /* Listos = ninguna card visible sigue con el indicador de carga puesto. Las
+     que esperan un toque para arrancar (autoplay denegado) no cuentan: ese toque
+     no puede llegar con el velo delante. */
   function visibleVideosReady() {
-    var pending = grid.querySelectorAll('.card__frame.is-buffering');
+    var pending = grid.querySelectorAll('.card__frame.is-buffering:not(.is-blocked)');
     for (var i = 0; i < pending.length; i++) {
       var rect = pending[i].getBoundingClientRect();
       if (rect.top < window.innerHeight && rect.bottom > 0) return false;
@@ -194,9 +196,15 @@
     if (project.type === 'video' && project.src) {
       var video = document.createElement('video');
       video.className = 'card__media';
+      /* Como ATRIBUTOS, no solo como propiedades: los navegadores integrados de
+         las apps (Instagram, WhatsApp) miran el HTML para permitir el autoplay,
+         y la propiedad `muted` no se refleja en el atributo. */
       video.muted = true;
+      video.setAttribute('muted', '');
       video.loop = true;
       video.playsInline = true;
+      video.setAttribute('playsinline', '');
+      video.setAttribute('webkit-playsinline', '');
       video.preload = 'none';
       video.poster = project.src + '.webp';
       /* Las <source> se inyectan al acercarse al viewport, no ahora: si se ponen
@@ -286,7 +294,7 @@
 
     video.addEventListener('playing', function () {
       clearTimeout(timer);
-      host.classList.remove('is-buffering');
+      host.classList.remove('is-buffering', 'is-blocked');
     });
 
     video.addEventListener('waiting', function () {
@@ -306,7 +314,9 @@
     if (video.dataset.webm) {
       var webm = document.createElement('source');
       webm.src = video.dataset.webm;
-      webm.type = 'video/webm';
+      /* Con el códec explícito, un Safari que no decodifica VP9 lo descarta
+         de entrada y pasa al MP4 en vez de atascarse en el WebM. */
+      webm.type = 'video/webm; codecs="vp9"';
       video.appendChild(webm);
     }
     var mp4 = document.createElement('source');
@@ -315,16 +325,39 @@
     video.appendChild(mp4);
     video.load();
 
-    var attempt = video.play();
-    if (attempt && typeof attempt.catch === 'function') {
-      /* Safari en modo ahorro de batería puede rechazar el autoplay: se queda el
-         poster, pero limpio. Un cuadrado girando sobre un vídeo que no va a
-         arrancar sería justo la sensación de "se ha quedado pillado". */
-      attempt.catch(function () {
-        if (video.parentNode) video.parentNode.classList.remove('is-buffering');
-      });
-    }
+    playOrQueue(video);
   }
+
+  /* El móvil puede negar el autoplay aunque el vídeo vaya mudo: iPhone en
+     ahorro de batería, o un navegador integrado de app. Entonces solo deja
+     reproducir dentro de un gesto del usuario, así que los vídeos bloqueados se
+     guardan y se relanzan todos con el primer toque en cualquier parte de la
+     página. Mientras tanto el indicador sigue girando: el vídeo está a un toque
+     de arrancar, no parado. */
+  var blockedVideos = [];
+
+  function playOrQueue(video) {
+    var attempt = video.play();
+    if (!attempt || typeof attempt.catch !== 'function') return;
+    attempt.catch(function (error) {
+      if (!error || error.name !== 'NotAllowedError') return;
+      if (blockedVideos.indexOf(video) === -1) blockedVideos.push(video);
+      if (video.parentNode) video.parentNode.classList.add('is-blocked');
+    });
+  }
+
+  function retryBlockedVideos() {
+    if (!blockedVideos.length) return;
+    var queued = blockedVideos;
+    blockedVideos = [];
+    queued.forEach(function (video) {
+      if (video.isConnected) playOrQueue(video);
+    });
+  }
+
+  ['touchend', 'click', 'keydown'].forEach(function (type) {
+    document.addEventListener(type, retryBlockedVideos, { capture: true, passive: true });
+  });
 
   function observeVideos() {
     var videos = grid.querySelectorAll('video.card__media');

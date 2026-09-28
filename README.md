@@ -10,6 +10,7 @@ Réplica pixel-perfect de los bocetos de Figma, verificada con tres gates:
 node scripts/gate.mjs        # geometría del DOM contra las medidas de Figma (0.5px)
 node scripts/visual.mjs pc   # diff visual contra el render del nodo
 node scripts/behaviour.mjs   # hover, toggle táctil y lightbox
+node scripts/mobile.mjs      # vídeo en móvil con autoplay normal, de app y en ahorro de batería
 ```
 
 ## Cómo se ve en local
