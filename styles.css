@@ -92,41 +92,34 @@ video { display: block; max-width: 100%; }
 }
 
 .masthead__name,
-.masthead__place,
 .masthead__role {
   position: absolute;
   white-space: nowrap;
 }
 
-/* Escritorio: "Madrid" a la izquierda, el nombre centrado y el rol a la derecha,
-   los tres en la misma línea. Es una desviación pedida sobre el boceto, donde el
-   nombre iba a la izquierda y "Madrid" en el centro. */
 .masthead__name {
   top: 24px;
-  left: 50%;
-  transform: translateX(-50%);
+  left: var(--edge);
   text-transform: uppercase;
 }
 
-/* "Madrid" y el rol comparten tamaño y color con la intro. Al bajar de 12px a
-   10px se recentran ópticamente sobre la línea del nombre: 24 + (15-12)/2. */
-.masthead__place,
+/* El rol comparte tamaño y color con la intro. Al bajar de 12px a 10px se
+   recentra ópticamente sobre la línea del nombre: 24 + (15-12)/2. Es el mismo
+   cálculo que usa el boceto móvil (nombre en 20, rol en 21.5). */
 .masthead__role {
   top: 25.5px;
   font-size: var(--type-small);
   line-height: 12px;
 }
 
-.masthead__place { left: var(--edge); }
-.masthead__role  { right: var(--edge); text-align: right; }
+.masthead__role { right: var(--edge); }
 
 /* ---------- Intro ---------- */
 
 .intro {
   height: var(--intro-block-h);
   margin: 0;
-  padding: var(--intro-offset) var(--edge) 0;
-  text-align: center;            /* escritorio; en móvil vuelve a la izquierda */
+  padding: var(--intro-offset) 0 0 var(--edge);
   color: var(--color-para);
   font-size: var(--type-small);
   line-height: 12px;
@@ -433,21 +426,9 @@ html.has-custom-cursor .cursor.is-outside { opacity: 0; }
     --type-small: 10px;
   }
 
-  /* Móvil: como el boceto, nombre a la izquierda, rol a la derecha y sin "Madrid". */
-  .masthead__name {
-    top: 20px;
-    left: var(--edge);
-    transform: none;
-  }
-
-  .masthead__place { display: none; }
+  .masthead__name { top: 20px; }
 
   .masthead__role { top: 21.5px; }
-
-  .intro {
-    padding: var(--intro-offset) 0 0 var(--edge);
-    text-align: left;
-  }
 
   .grid { grid-template-columns: 1fr; }
 
