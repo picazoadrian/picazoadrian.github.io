@@ -128,7 +128,24 @@
     document.addEventListener('mouseenter', function () { dot.classList.remove('is-outside'); });
   }
 
-  /* ---------- Pantalla de carga ---------- */
+  /* ---------- Pantalla de carga ----------
+     El cuadrado da sus dos vueltas y, si los vídeos que se ven al entrar ya
+     corren, el velo se va. Si no, el cuadrado sigue girando con la misma curva
+     y el velo se retira al final de la primera vuelta en la que ya estén listos:
+     así nunca se destapa una página con los frames parados. El tope evita que
+     una conexión muy lenta deje a nadie delante de un cuadrado. */
+
+  var LOADER_MAX_WAIT = 8000;
+
+  /* Listos = ninguna card visible sigue con el indicador de carga puesto. */
+  function visibleVideosReady() {
+    var pending = grid.querySelectorAll('.card__frame.is-buffering');
+    for (var i = 0; i < pending.length; i++) {
+      var rect = pending[i].getBoundingClientRect();
+      if (rect.top < window.innerHeight && rect.bottom > 0) return false;
+    }
+    return true;
+  }
 
   function runLoader() {
     var loader = document.getElementById('loader');
@@ -153,11 +170,22 @@
       document.body.classList.remove('is-loading');
     };
 
-    square.addEventListener('animationend', finish, { once: true });
+    var finishIfReady = function () {
+      if (visibleVideosReady()) finish();
+    };
 
-    /* Red de seguridad: si la animación no llega a disparar su evento (pestaña
-       en segundo plano, por ejemplo), el velo se va igual y no bloquea la web. */
-    setTimeout(finish, 3000);
+    square.addEventListener('animationend', function () {
+      if (visibleVideosReady()) {
+        finish();
+        return;
+      }
+      square.classList.add('is-waiting');
+      square.addEventListener('animationiteration', finishIfReady);
+    }, { once: true });
+
+    /* Tope, y red de seguridad si la animación no llega a disparar sus eventos
+       (pestaña en segundo plano, por ejemplo): el velo se va igual. */
+    setTimeout(finish, LOADER_MAX_WAIT);
   }
 
   /* ---------- Pintado del grid ---------- */

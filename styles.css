@@ -92,34 +92,42 @@ video { display: block; max-width: 100%; }
 }
 
 .masthead__name,
+.masthead__place,
 .masthead__role {
   position: absolute;
   white-space: nowrap;
 }
 
+/* Escritorio: el nombre va centrado y a la izquierda se apilan "Madrid" y el
+   rol. Es una desviación pedida sobre el boceto, donde el nombre iba a la
+   izquierda y el rol a la derecha (como sigue en móvil). */
 .masthead__name {
   top: 24px;
-  left: var(--edge);
+  left: 50%;
+  transform: translateX(-50%);
   text-transform: uppercase;
 }
 
-/* El rol comparte tamaño y color con la intro. Al bajar de 12px a 10px se
-   recentra ópticamente sobre la línea del nombre: 24 + (15-12)/2. Es el mismo
-   cálculo que usa el boceto móvil (nombre en 20, rol en 21.5). */
+/* "Madrid" y el rol comparten tamaño y color con la intro. Al bajar de 12px a
+   10px, la primera línea se recentra ópticamente sobre la del nombre:
+   24 + (15-12)/2 = 25.5. El rol va en la línea siguiente, 12px más abajo. */
+.masthead__place,
 .masthead__role {
-  top: 25.5px;
+  left: var(--edge);
   font-size: var(--type-small);
   line-height: 12px;
 }
 
-.masthead__role { right: var(--edge); }
+.masthead__place { top: 25.5px; }
+.masthead__role  { top: 37.5px; }
 
 /* ---------- Intro ---------- */
 
 .intro {
   height: var(--intro-block-h);
   margin: 0;
-  padding: var(--intro-offset) 0 0 var(--edge);
+  padding: var(--intro-offset) var(--edge) 0;
+  text-align: center;            /* escritorio; en móvil vuelve a la izquierda */
   color: var(--color-para);
   font-size: var(--type-small);
   line-height: 12px;
@@ -222,6 +230,11 @@ video { display: block; max-width: 100%; }
   height: var(--loader-size);
   background: var(--color-ink-strong);
   animation: loader-spin var(--loader-spin) var(--bar-ease) forwards;
+}
+
+/* Si al acabar las dos vueltas los vídeos aún no corren, sigue girando igual. */
+.loader__square.is-waiting {
+  animation: loader-spin var(--loader-spin) var(--bar-ease) infinite;
 }
 
 @keyframes loader-spin {
@@ -421,9 +434,25 @@ html.has-custom-cursor .cursor.is-outside { opacity: 0; }
     --type-small: 10px;
   }
 
-  .masthead__name { top: 20px; }
+  /* Móvil: como el boceto, nombre a la izquierda, rol a la derecha y sin "Madrid". */
+  .masthead__name {
+    top: 20px;
+    left: var(--edge);
+    transform: none;
+  }
 
-  .masthead__role { top: 21.5px; }
+  .masthead__place { display: none; }
+
+  .masthead__role {
+    top: 21.5px;
+    left: auto;
+    right: var(--edge);
+  }
+
+  .intro {
+    padding: var(--intro-offset) 0 0 var(--edge);
+    text-align: left;
+  }
 
   .grid { grid-template-columns: 1fr; }
 
