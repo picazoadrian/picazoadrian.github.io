@@ -206,7 +206,9 @@
 
     var frame = document.createElement('div');
     frame.className = 'card__frame';
-    frame.appendChild(buildMedia(project, index));
+    var media = buildMedia(project, index);
+    frame.appendChild(media);
+    if (media.tagName === 'VIDEO') trackBuffering(media, frame);
 
     var bar = document.createElement('div');
     bar.className = 'card__bar';
@@ -238,6 +240,37 @@
 
   /* ---------- Vídeo: loop permanente, pero cargado cuando toca ---------- */
 
+  /* Mientras el vídeo no corre, el primer frame se desenfoca y encima gira el
+     cuadrado del loader de entrada, en pequeño. Si a media reproducción se queda
+     sin datos, vuelve a salir, pero solo pasados 300 ms: los microcortes no
+     llegan a pintarlo y no parpadea. */
+  var STALL_DELAY = 300;
+
+  function trackBuffering(video, host) {
+    var buffer = document.createElement('span');
+    buffer.className = 'buffer';
+    buffer.setAttribute('aria-hidden', 'true');
+    buffer.appendChild(document.createElement('span')).className = 'buffer__square';
+    host.appendChild(buffer);
+    host.classList.add('is-buffering');
+
+    var timer = null;
+
+    video.addEventListener('playing', function () {
+      clearTimeout(timer);
+      host.classList.remove('is-buffering');
+    });
+
+    video.addEventListener('waiting', function () {
+      clearTimeout(timer);
+      timer = setTimeout(function () {
+        if (video.isConnected && !video.paused && video.readyState < 3) {
+          host.classList.add('is-buffering');
+        }
+      }, STALL_DELAY);
+    });
+  }
+
   function startVideo(video) {
     if (video.dataset.loaded === '1') return;
     video.dataset.loaded = '1';
@@ -256,8 +289,12 @@
 
     var attempt = video.play();
     if (attempt && typeof attempt.catch === 'function') {
-      /* Safari en modo ahorro de batería puede rechazar el autoplay: se queda el poster. */
-      attempt.catch(function () {});
+      /* Safari en modo ahorro de batería puede rechazar el autoplay: se queda el
+         poster, pero limpio. Un cuadrado girando sobre un vídeo que no va a
+         arrancar sería justo la sensación de "se ha quedado pillado". */
+      attempt.catch(function () {
+        if (video.parentNode) video.parentNode.classList.remove('is-buffering');
+      });
     }
   }
 
@@ -314,6 +351,7 @@
 
     lastFocused = document.activeElement;
     stage.innerHTML = '';
+    stage.classList.remove('is-buffering');
 
     var source = card.querySelector('.card__media');
     var clone;
@@ -343,6 +381,7 @@
 
     clone.className = 'lightbox__media';
     stage.appendChild(clone);
+    if (clone.tagName === 'VIDEO') trackBuffering(clone, stage);
 
     lightbox.hidden = false;
     document.body.classList.add('is-locked');
@@ -356,6 +395,7 @@
     if (lightbox.hidden) return;
     lightbox.hidden = true;
     stage.innerHTML = '';
+    stage.classList.remove('is-buffering');
     document.body.classList.remove('is-locked');
     if (lastFocused && typeof lastFocused.focus === 'function') lastFocused.focus();
   }

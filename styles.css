@@ -50,6 +50,8 @@
 
   --loader-size: 12px;
   --loader-spin: 1400ms;   /* dos vueltas completas */
+  --buffer-size: 8px;      /* el mismo cuadrado, en pequeño, sobre un vídeo que carga */
+  --buffer-blur: 14px;
 }
 
 *,
@@ -232,6 +234,56 @@ video { display: block; max-width: 100%; }
 /* Mientras carga no se hace scroll por detrás del velo */
 body.is-loading { overflow: hidden; }
 
+/* ---------- Vídeo cargando ----------
+   Mientras un vídeo no corre, su primer frame se desenfoca y en el centro gira
+   el cuadrado del loader de entrada, en pequeño y en bucle, con la misma curva:
+   sale disparado, frena y descansa, así que se lee como algo vivo y no como un
+   spinner de sistema. El frame, además de desenfocado, se oscurece un poco: así
+   el cuadrado blanco se lee igual sobre un cielo que sobre una sombra. El
+   desenfoque escala un pelo el vídeo para que el halo no deje bordes claros;
+   el marco lo recorta. */
+
+.card__media,
+.lightbox__media {
+  transition:
+    filter var(--bar-duration) var(--bar-ease),
+    transform var(--bar-duration) var(--bar-ease);
+}
+
+.is-buffering > .card__media,
+.is-buffering > .lightbox__media {
+  filter: blur(var(--buffer-blur)) brightness(0.8);
+  transform: scale(1.06);
+}
+
+.buffer {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 300ms ease;
+}
+
+.is-buffering > .buffer { opacity: 1; }
+
+.buffer__square {
+  width: var(--buffer-size);
+  height: var(--buffer-size);
+  background: #ffffff;
+  animation: buffer-spin var(--loader-spin) var(--bar-ease) infinite;
+}
+
+@keyframes buffer-spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes buffer-pulse {
+  50% { opacity: 0.25; }
+}
+
 /* ---------- Lightbox ---------- */
 
 .lightbox {
@@ -249,7 +301,12 @@ body.is-loading { overflow: hidden; }
 
 .lightbox:focus { outline: none; }
 
-.lightbox__stage { max-width: 100%; max-height: 100%; }
+.lightbox__stage {
+  position: relative;            /* ancla el indicador de carga */
+  overflow: hidden;              /* recorta el halo del desenfoque */
+  max-width: 100%;
+  max-height: 100%;
+}
 
 .lightbox__media {
   max-width: 100%;
@@ -378,6 +435,11 @@ html.has-custom-cursor .cursor.is-outside { opacity: 0; }
 
 @media (prefers-reduced-motion: reduce) {
   .loader { display: none; }
+
+  /* Sin giro, pero tampoco un cuadrado quieto, que parecería colgado: un pulso lento. */
+  .buffer__square {
+    animation: buffer-pulse 1600ms ease-in-out infinite !important;
+  }
 
   * {
     animation-duration: 0.01ms !important;
