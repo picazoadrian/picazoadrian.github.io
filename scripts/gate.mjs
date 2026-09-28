@@ -9,10 +9,9 @@
  * del frame (71,47 en escritorio; -457,47 en móvil). Tolerancia: 0.5px.
  *
  * Desviaciones deliberadas del boceto, pedidas después de verlo publicado:
- *   - Escritorio: el nombre y la intro van CENTRADOS; "Madrid" y el rol se
- *     apilan a la izquierda (Madrid en y=25.5, rol en 37.5). En Figma el nombre
- *     iba a la izquierda, "Madrid" en el centro y el rol a la derecha. Móvil
- *     sigue el boceto.
+ *   - Escritorio: el nombre y la intro van CENTRADOS, "Madrid" a la izquierda
+ *     y el rol a la derecha, todo en la línea del nombre. En Figma el nombre
+ *     iba a la izquierda y "Madrid" en el centro. Móvil sigue el boceto.
  *   - "Madrid" y el rol bajan de 12px a 10px para igualar a la intro.
  *   - Hay TRES filas de piezas, no dos. El grid y la altura total ya no salen
  *     de Figma: se derivan de su geometría (primera fila en 147, filas de 486,
@@ -52,7 +51,7 @@ const EXPECTED = {
       ['.masthead',        { y: 0,    h: 51 }],
       ['.masthead__name',  { centerX: 756, y: 24, h: 15 }],
       ['.masthead__place', { x: 16,   y: 25.5, h: 12 }],
-      ['.masthead__role',  { x: 16,   y: 37.5, h: 12 }],
+      ['.masthead__role',  { right: 1496, y: 25.5, h: 12 }],
       ['.intro',           { y: 51,   h: 56 }],
       ['.intro__text',     { centerX: 756, y: 67, h: 24 }],
       ['.card:nth-child(1) .card__frame', { x: 0,   y: 147,  w: 756, h: 486 }],
