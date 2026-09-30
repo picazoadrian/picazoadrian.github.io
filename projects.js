@@ -10,8 +10,8 @@
  * Ejemplo con material real:
  *   { src: 'assets/media/01', type: 'video', title: 'SCUFFERS', subtitle: 'NEW YORK FW26' }
  *
- * Seis piezas: tres filas de dos en escritorio, una columna en móvil. (El boceto
- * de Figma tenía cuatro; la tercera fila se añadió después.)
+ * Siete piezas: filas de dos en escritorio (la última con una sola), una columna
+ * en móvil. (El boceto de Figma tenía cuatro; el resto se añadió después.)
  */
 window.PROJECTS = [
   { src: 'assets/media/01', type: 'video', title: 'SCUFFERS', subtitle: 'NEW YORK FW26' },
@@ -19,5 +19,6 @@ window.PROJECTS = [
   { src: 'assets/media/03', type: 'video', title: 'SCUFFERS', subtitle: 'NEW YORK FW26' },
   { src: 'assets/media/04', type: 'video', title: 'SCUFFERS', subtitle: 'NEW YORK FW26' },
   { src: 'assets/media/05', type: 'video', title: 'SCUFFERS', subtitle: 'NEW YORK FW26' },
-  { src: null, type: 'placeholder', title: 'SCUFFERS', subtitle: 'NEW YORK FW26' },
+  { src: 'assets/media/06', type: 'video', title: 'SCUFFERS', subtitle: 'NEW YORK FW26' },
+  { src: 'assets/media/07', type: 'video', title: 'SCUFFERS', subtitle: 'NEW YORK FW26' },
 ];

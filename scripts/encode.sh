@@ -9,7 +9,7 @@
 #   01-full.mp4  H.264 a resolución de origen CRF 20        (lightbox a pantalla completa)
 #   01.webp      poster del primer fotograma
 #
-# El grid tiene seis vídeos en loop a la vez, así que ahí basta 1080p. El lightbox
+# El grid tiene siete vídeos en loop a la vez, así que ahí basta 1080p. El lightbox
 # carga aparte la versión a resolución completa: CRF 20 da un SSIM de ~0,99 contra
 # el máster (indistinguible) y un clip de 18 s en 4K queda en ~65 MB, por debajo del
 # límite de 100 MB por archivo de GitHub. H.264 porque lo decodifica cualquier navegador.

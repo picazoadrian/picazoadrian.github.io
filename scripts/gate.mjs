@@ -44,8 +44,8 @@ const TYPES = {
 /* Referencias de Figma, ya normalizadas al origen del frame. */
 const EXPECTED = {
   pc: {
-    viewport: { width: 1512, height: 1690 },
-    frameHeight: 1690,
+    viewport: { width: 1512, height: 2176 },
+    frameHeight: 2176,
     checks: [
       ['.masthead',        { y: 0,    h: 51 }],
       ['.masthead__name',  { x: 16,   y: 24, h: 15 }],
@@ -58,16 +58,17 @@ const EXPECTED = {
       ['.card:nth-child(4) .card__frame', { x: 756, y: 633,  w: 756, h: 486 }],
       ['.card:nth-child(5) .card__frame', { x: 0,   y: 1119, w: 756, h: 486 }],
       ['.card:nth-child(6) .card__frame', { x: 756, y: 1119, w: 756, h: 486 }],
-      ['.colophon',          { y: 1605, h: 85 }],
-      ['.colophon__contact', { x: 12,   y: 1624, h: 12 }],
-      ['.colophon__top',     { right: 1500, y: 1624, h: 12 }]
+      ['.card:nth-child(7) .card__frame', { x: 0,   y: 1605, w: 756, h: 486 }],
+      ['.colophon',          { y: 2091, h: 85 }],
+      ['.colophon__contact', { x: 12,   y: 2110, h: 12 }],
+      ['.colophon__top',     { right: 1500, y: 2110, h: 12 }]
     ],
     /* La barra en hover ocupa los 36px inferiores de su card (en reposo está fuera). */
     hoverBar: { h: 36, bottom: 633 }
   },
   mobile: {
-    viewport: { width: 402, height: 3112 },
-    frameHeight: 3112,
+    viewport: { width: 402, height: 3598 },
+    frameHeight: 3598,
     checks: [
       ['.masthead',        { y: 0,  h: 47 }],
       ['.masthead__name',  { x: 12, y: 20, h: 15 }],
@@ -80,9 +81,10 @@ const EXPECTED = {
       ['.card:nth-child(4) .card__frame', { x: 0, y: 1569, w: 402, h: 486 }],
       ['.card:nth-child(5) .card__frame', { x: 0, y: 2055, w: 402, h: 486 }],
       ['.card:nth-child(6) .card__frame', { x: 0, y: 2541, w: 402, h: 486 }],
-      ['.colophon',          { y: 3027, h: 85 }],
-      ['.colophon__contact', { x: 12,   y: 3046, h: 12 }],
-      ['.colophon__top',     { right: 390, y: 3046, h: 12 }]
+      ['.card:nth-child(7) .card__frame', { x: 0, y: 3027, w: 402, h: 486 }],
+      ['.colophon',          { y: 3513, h: 85 }],
+      ['.colophon__contact', { x: 12,   y: 3532, h: 12 }],
+      ['.colophon__top',     { right: 390, y: 3532, h: 12 }]
     ],
     hoverBar: null
   }
