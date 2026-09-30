@@ -50,7 +50,15 @@
     <div class="lightbox__stage"></div>
   </div>
 
-  <script src="projects.js"></script>
-  <script src="main.js"></script>
+  <!-- GitHub Pages sirve todo con max-age=600: sin el sello, quien ya hubiera entrado
+       seguiría viendo la lista de proyectos anterior hasta 10 minutos después de publicar. -->
+  <script>
+    ['projects.js?' + Date.now(), 'main.js'].forEach(function (src) {
+      var s = document.createElement('script');
+      s.src = src;
+      s.async = false;
+      document.body.appendChild(s);
+    });
+  </script>
 </body>
 </html>
