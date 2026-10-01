@@ -16,9 +16,8 @@
  * Ejemplo con material real:
  *   { src: 'assets/media/01', type: 'video', title: 'SCUFFERS', subtitle: 'NEW YORK FW26' }
  *
- * Seis vídeos en filas de dos y, al final, un vídeo de cierre a fila entera con su
- * propia proporción; una columna en móvil. (El boceto de Figma tenía cuatro piezas; el
- * resto se añadió después.)
+ * Seis vídeos en filas de dos en escritorio; una columna en móvil. (El boceto de
+ * Figma tenía cuatro piezas; el resto se añadió después.)
  */
 window.PROJECTS = [
   { src: 'assets/media/04', type: 'video', title: 'BTS of Aron Piper', subtitle: 'on set of the Scuffers campaign' },
@@ -27,5 +26,4 @@ window.PROJECTS = [
   { src: 'assets/media/02', type: 'video', title: 'Scuffers New York', subtitle: "Fall Winter 26'" },
   { src: 'assets/media/03', type: 'video', title: 'Scuffers Summer', subtitle: "Season 26'" },
   { src: 'assets/media/05', type: 'video', title: '4theclubture x Casa Pepa', subtitle: 'Video Dept.' },
-  { src: 'assets/media/08', type: 'video', wide: true, lightbox: false, bar: false, ratio: '16 / 9' },
 ];
