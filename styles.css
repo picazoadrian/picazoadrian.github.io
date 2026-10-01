@@ -136,6 +136,7 @@ video { display: block; max-width: 100%; }
   margin: var(--grid-top-gap) 0 0;
   padding: 0;
   list-style: none;
+  container-type: inline-size;   /* el alto de las cards se calcula sobre su ancho (cqw) */
 }
 
 /* ---------- Card ---------- */
@@ -147,6 +148,18 @@ video { display: block; max-width: 100%; }
   overflow: hidden;              /* la barra se esconde fuera de este marco */
   aspect-ratio: 756 / 486;       /* a 1512px de ancho da los 486px de Figma */
   background: var(--color-card-bg);
+}
+
+/* Alto redondeado a píxel entero. Con el aspect-ratio a secas, a anchos como 1280
+   o 390 el alto sale fraccionario (411,42px, 471,48px) y el navegador redondea por
+   separado el recorte de cada card y la capa del vídeo: entre dos filas quedaba
+   una línea de 1px del fondo blanco. Los navegadores sin round() se quedan con
+   el aspect-ratio. Las piezas con `ratio` propio (projects.js) no se tocan. */
+@supports (height: round(down, 1px, 1px)) {
+  .card__frame:not([style*="aspect-ratio"]) {
+    aspect-ratio: auto;
+    height: round(50cqw * 486 / 756, 1px);
+  }
 }
 
 .card__media {
@@ -441,6 +454,10 @@ html.has-custom-cursor .cursor.is-outside { opacity: 0; }
   .grid { grid-template-columns: 1fr; }
 
   .card__frame { aspect-ratio: 402 / 486; }
+
+  @supports (height: round(down, 1px, 1px)) {
+    .card__frame:not([style*="aspect-ratio"]) { height: round(100cqw * 486 / 402, 1px); }
+  }
 
 }
 
