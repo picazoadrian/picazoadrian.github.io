@@ -255,25 +255,28 @@
 
     var frame = document.createElement('div');
     frame.className = 'card__frame';
+    if (project.ratio) frame.style.aspectRatio = project.ratio;
     var media = buildMedia(project, index);
     frame.appendChild(media);
     if (media.tagName === 'VIDEO') trackBuffering(media, frame);
 
-    var bar = document.createElement('div');
-    bar.className = 'card__bar';
+    if (project.bar !== false) {
+      var bar = document.createElement('div');
+      bar.className = 'card__bar';
 
-    var title = document.createElement('span');
-    title.className = 'card__title';
-    title.textContent = project.title || '';
+      var title = document.createElement('span');
+      title.className = 'card__title';
+      title.textContent = project.title || '';
 
-    var subtitle = document.createElement('span');
-    subtitle.className = 'card__subtitle';
-    subtitle.textContent = project.subtitle || '';
+      var subtitle = document.createElement('span');
+      subtitle.className = 'card__subtitle';
+      subtitle.textContent = project.subtitle || '';
 
-    bar.appendChild(title);
-    bar.appendChild(subtitle);
+      bar.appendChild(title);
+      bar.appendChild(subtitle);
 
-    frame.appendChild(bar);
+      frame.appendChild(bar);
+    }
     item.appendChild(frame);
     return item;
   }

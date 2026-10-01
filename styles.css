@@ -199,11 +199,10 @@ video { display: block; max-width: 100%; }
   .card { cursor: pointer; }
 }
 
-/* Pieza ancha: la fila entera (dos cards) con el mismo alto que una card. */
+/* Pieza ancha: la fila entera. Su alto lo da el `ratio` de projects.js. */
 .card--wide { grid-column: 1 / -1; }
-.card--wide .card__frame { aspect-ratio: 1512 / 486; }
 
-/* Sin lightbox: la barra sale al hover, pero el cursor no promete un clic. */
+/* Sin lightbox: el cursor no promete un clic. */
 .card--static,
 .card--static .card__frame { cursor: default; }
 
@@ -440,8 +439,7 @@ html.has-custom-cursor .cursor.is-outside { opacity: 0; }
 
   .grid { grid-template-columns: 1fr; }
 
-  .card__frame,
-  .card--wide .card__frame { aspect-ratio: 402 / 486; }
+  .card__frame { aspect-ratio: 402 / 486; }
 
 }
 
