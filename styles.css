@@ -181,6 +181,7 @@ video { display: block; max-width: 100%; }
   font-weight: 500;
   line-height: 12px;
   font-family: 'Inter', system-ui, sans-serif;
+  text-transform: uppercase;      /* los rótulos se escriben como sea en projects.js */
   transform: translateY(100%);
   transition: transform var(--bar-duration) var(--bar-ease);
   will-change: transform;
