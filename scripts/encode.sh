@@ -39,50 +39,57 @@ FULL_CRF="${FULL_CRF:-20}"
 LOOP=()
 [ -n "${LOOP_SECONDS:-}" ] && LOOP=(-t "$LOOP_SECONDS")
 
-FULL_VF=()
-[ -n "${FULL_WIDTH:-}" ] && FULL_VF=(-vf "scale=${FULL_WIDTH}:-2:flags=lanczos")
+# Color: que se vea igual que el máster en QuickTime/Fotos en TODOS los navegadores.
+# Apple pinta el vídeo bt709 con una curva que levanta los medios tonos (~+10/255);
+# Chrome pinta el valor en bruto, más oscuro. Se aplica esa curva a los píxeles
+# (apple-bt709.cube, medida en WebKit frente al máster) y al final se etiqueta la
+# transferencia como sRGB para que Safari no la vuelva a aplicar encima.
+LUT="$ROOT/scripts/apple-bt709.cube"
+COLOR="scale=in_color_matrix=bt709:in_range=tv:out_range=pc,format=gbrp,lut1d=file=$LUT,scale=out_color_matrix=bt709:out_range=tv,format=yuv420p,"
+POSTER_COLOR="scale=in_color_matrix=bt709:in_range=tv,format=gbrp,lut1d=file=$LUT,"
+
+FULL_SCALE=""
+[ -n "${FULL_WIDTH:-}" ] && FULL_SCALE=",scale=${FULL_WIDTH}:-2:flags=lanczos"
 
 command -v ffmpeg >/dev/null || { echo "Falta ffmpeg: brew install ffmpeg" >&2; exit 1; }
 command -v cwebp >/dev/null || { echo "Falta cwebp: brew install webp" >&2; exit 1; }
 
 echo "→ VP9 (pasada 1/2)"
-ffmpeg -y -i "$SRC" ${LOOP[@]+"${LOOP[@]}"} -an -vf "scale=${WIDTH}:-2" \
+ffmpeg -y -i "$SRC" ${LOOP[@]+"${LOOP[@]}"} -an -map 0:v:0 -vf "${COLOR}scale=${WIDTH}:-2" \
   -c:v libvpx-vp9 -crf "$CRF" -b:v 0 -row-mt 1 -pass 1 -f null /dev/null
 
 echo "→ VP9 (pasada 2/2)"
-ffmpeg -y -i "$SRC" ${LOOP[@]+"${LOOP[@]}"} -an -vf "scale=${WIDTH}:-2" \
+ffmpeg -y -i "$SRC" ${LOOP[@]+"${LOOP[@]}"} -an -map 0:v:0 -vf "${COLOR}scale=${WIDTH}:-2" \
   -c:v libvpx-vp9 -crf "$CRF" -b:v 0 -row-mt 1 -pass 2 "$OUT/$NAME.webm"
 
 echo "→ H.264 de fallback"
-ffmpeg -y -i "$SRC" ${LOOP[@]+"${LOOP[@]}"} -an -vf "scale=${WIDTH}:-2" \
+ffmpeg -y -i "$SRC" ${LOOP[@]+"${LOOP[@]}"} -an -map 0:v:0 -vf "${COLOR}scale=${WIDTH}:-2" \
   -c:v libx264 -crf 20 -preset slow -pix_fmt yuv420p -movflags +faststart "$OUT/$NAME.mp4"
 
 echo "→ H.264 para móvil"
 # La card móvil es vertical (402:486): se recorta el centro, que es lo que el cover
 # enseña, y se baja a 720 px. ~1,5 Mbps: dos vídeos a la vez caben en un 4G flojo.
 ffmpeg -y -i "$SRC" ${LOOP[@]+"${LOOP[@]}"} -an -map 0:v:0 \
-  -vf "crop=ih*402/486:ih,scale=720:-2:flags=lanczos" \
+  -vf "${COLOR}crop=ih*402/486:ih,scale=720:-2:flags=lanczos" \
   -c:v libx264 -crf 30 -preset slow -pix_fmt yuv420p -movflags +faststart "$OUT/$NAME-m.mp4"
 
 echo "→ H.264 a resolución completa (lightbox)"
-ffmpeg -y -i "$SRC" -an ${FULL_VF[@]+"${FULL_VF[@]}"} \
+ffmpeg -y -i "$SRC" -an -map 0:v:0 -vf "${COLOR%,}${FULL_SCALE}" \
   -c:v libx264 -crf "$FULL_CRF" -preset slow -profile:v high -level 5.1 -pix_fmt yuv420p \
   -movflags +faststart "$OUT/$NAME-full.mp4"
 
 echo "→ poster"
 # El ffmpeg de Homebrew viene sin libwebp: se saca el fotograma en PNG y lo pasa cwebp.
 POSTER_PNG="$(mktemp -t poster).png"
-ffmpeg -y -i "$SRC" -vf "scale=${WIDTH}:-2" -frames:v 1 "$POSTER_PNG"
+ffmpeg -y -i "$SRC" -map 0:v:0 -vf "${POSTER_COLOR}scale=${WIDTH}:-2" -frames:v 1 "$POSTER_PNG"
 cwebp -quiet -q 80 "$POSTER_PNG" -o "$OUT/$NAME.webp"
 rm -f "$POSTER_PNG"
 
 rm -f ffmpeg2pass-0.log
 
 echo "→ etiqueta de color"
-# La transferencia se etiqueta como sRGB, no bt709, sin recodificar. Safari (Mac e
-# iPhone) sí aplica la curva bt709 de la etiqueta y levanta los medios tonos: los
-# clips se veían ~10/255 más claros, "sobreexpuestos", que el original. Chrome la
-# ignora. Con sRGB los dos pintan los píxeles tal cual salen del máster. En MP4
+# La transferencia se etiqueta como sRGB, sin recodificar: la curva de Apple ya va
+# en los píxeles, y con la etiqueta bt709 Safari la aplicaría otra vez. En MP4
 # cuenta el átomo colr del contenedor, no solo el VUI del H.264: se cambian ambos.
 TMP="$(mktemp -d)"
 for f in "$OUT/$NAME.mp4" "$OUT/$NAME-m.mp4" "$OUT/$NAME-full.mp4"; do
