@@ -11,6 +11,8 @@
      Se mira el puntero, no la anchura, para que un portátil táctil no se quede sin ninguno. */
   var finePointer = window.matchMedia('(hover: hover) and (pointer: fine)');
   var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  /* Mismo corte que el CSS: por debajo, una columna con cards verticales. */
+  var narrow = window.matchMedia('(max-width: 767px)');
 
   var lastFocused = null;
 
@@ -209,8 +211,17 @@
       video.poster = project.src + '.webp';
       /* Las <source> se inyectan al acercarse al viewport, no ahora: si se ponen
          de entrada, el navegador empieza a descargar las piezas de toda la página. */
-      video.dataset.webm = project.src + '.webm';
-      video.dataset.mp4 = project.src + '.mp4';
+      /* En móvil, el 1080p apaisado era demasiado: dos vídeos a ~10 Mbps cada
+         uno sobre un 4G de 9 se atascaban sin parar, y en una card vertical
+         más de la mitad de esos píxeles ni se ven. Allí va una versión ya
+         recortada al 402:486 de la card, a 720 px y ~1,5 Mbps, solo en H.264. */
+      if (narrow.matches) {
+        video.dataset.webm = '';
+        video.dataset.mp4 = project.src + '-m.mp4';
+      } else {
+        video.dataset.webm = project.src + '.webm';
+        video.dataset.mp4 = project.src + '.mp4';
+      }
       /* El lightbox no reutiliza el 1080p del grid: carga aparte la versión a
          resolución completa, que solo se descarga si alguien abre la pieza. */
       video.dataset.full = project.src + '-full.mp4';

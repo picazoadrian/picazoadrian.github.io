@@ -7,6 +7,7 @@
 #   01.webm      VP9 1080p CRF 28, dos pasadas, sin audio   (grid, fuente principal)
 #   01.mp4       H.264 1080p CRF 20 de fallback para Safari antiguo
 #   01-full.mp4  H.264 a resolución de origen CRF 20        (lightbox a pantalla completa)
+#   01-m.mp4     H.264 720 px recortado al 402:486 de la card móvil, CRF 30 (grid en móvil)
 #   01.webp      poster del primer fotograma
 #
 # El grid tiene siete vídeos en loop a la vez, así que ahí basta 1080p. El lightbox
@@ -56,6 +57,13 @@ echo "→ H.264 de fallback"
 ffmpeg -y -i "$SRC" ${LOOP[@]+"${LOOP[@]}"} -an -vf "scale=${WIDTH}:-2" \
   -c:v libx264 -crf 20 -preset slow -pix_fmt yuv420p -movflags +faststart "$OUT/$NAME.mp4"
 
+echo "→ H.264 para móvil"
+# La card móvil es vertical (402:486): se recorta el centro, que es lo que el cover
+# enseña, y se baja a 720 px. ~1,5 Mbps: dos vídeos a la vez caben en un 4G flojo.
+ffmpeg -y -i "$SRC" ${LOOP[@]+"${LOOP[@]}"} -an -map 0:v:0 \
+  -vf "crop=ih*402/486:ih,scale=720:-2:flags=lanczos" \
+  -c:v libx264 -crf 30 -preset slow -pix_fmt yuv420p -movflags +faststart "$OUT/$NAME-m.mp4"
+
 echo "→ H.264 a resolución completa (lightbox)"
 ffmpeg -y -i "$SRC" -an ${FULL_VF[@]+"${FULL_VF[@]}"} \
   -c:v libx264 -crf "$FULL_CRF" -preset slow -profile:v high -level 5.1 -pix_fmt yuv420p \
@@ -72,4 +80,4 @@ rm -f ffmpeg2pass-0.log
 
 echo
 echo "Listo. Pesos:"
-ls -lh "$OUT/$NAME".{webm,mp4,webp} "$OUT/$NAME-full.mp4" | awk '{print "  " $9 "  " $5}'
+ls -lh "$OUT/$NAME".{webm,mp4,webp} "$OUT/$NAME-full.mp4" "$OUT/$NAME-m.mp4" | awk '{print "  " $9 "  " $5}'
