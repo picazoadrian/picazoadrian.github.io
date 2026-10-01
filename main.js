@@ -239,6 +239,8 @@
     var item = document.createElement('li');
     item.className = 'card';
     item.dataset.index = String(index);
+    if (project.wide) item.classList.add('card--wide');
+    if (project.lightbox === false) item.classList.add('card--static');
 
     var frame = document.createElement('div');
     frame.className = 'card__frame';
@@ -394,7 +396,7 @@
     if (!card) return;
 
     if (finePointer.matches) {
-      openLightbox(card);
+      if (!card.classList.contains('card--static')) openLightbox(card);
       return;
     }
 

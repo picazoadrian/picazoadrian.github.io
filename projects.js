@@ -6,19 +6,24 @@
  *   type     — 'video' | 'image' | 'placeholder'
  *   title    — rótulo negro de la barra (Figma: SCUFFERS)
  *   subtitle — rótulo gris que va detrás (Figma: NEW YORK FW26)
+ *   wide     — (opcional) true: ocupa la fila entera en escritorio (dos cards de ancho,
+ *              mismo alto); en móvil, lo mismo que una card normal.
+ *   lightbox — (opcional) false: la barra sale igual al pasar el ratón, pero el clic
+ *              no abre la pieza a pantalla completa.
  *
  * Ejemplo con material real:
  *   { src: 'assets/media/01', type: 'video', title: 'SCUFFERS', subtitle: 'NEW YORK FW26' }
  *
- * Siete piezas: filas de dos en escritorio (la última con una sola), una columna
- * en móvil. (El boceto de Figma tenía cuatro; el resto se añadió después.)
+ * Seis vídeos en filas de dos y, al final, una imagen que ocupa la fila entera en
+ * escritorio; una columna en móvil. (El boceto de Figma tenía cuatro piezas; el
+ * resto se añadió después.)
  */
 window.PROJECTS = [
-  { src: 'assets/media/01', type: 'video', title: 'SCUFFERS', subtitle: 'NEW YORK FW26' },
   { src: 'assets/media/02', type: 'video', title: 'SCUFFERS', subtitle: 'NEW YORK FW26' },
   { src: 'assets/media/03', type: 'video', title: 'SCUFFERS', subtitle: 'NEW YORK FW26' },
   { src: 'assets/media/04', type: 'video', title: 'SCUFFERS', subtitle: 'NEW YORK FW26' },
   { src: 'assets/media/05', type: 'video', title: 'SCUFFERS', subtitle: 'NEW YORK FW26' },
   { src: 'assets/media/06', type: 'video', title: 'SCUFFERS', subtitle: 'NEW YORK FW26' },
   { src: 'assets/media/07', type: 'video', title: 'SCUFFERS', subtitle: 'NEW YORK FW26' },
+  { src: 'assets/media/collage', type: 'image', wide: true, lightbox: false, title: 'SCUFFERS', subtitle: 'NEW YORK FW26' },
 ];
