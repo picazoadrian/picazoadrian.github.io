@@ -78,6 +78,22 @@ rm -f "$POSTER_PNG"
 
 rm -f ffmpeg2pass-0.log
 
+echo "→ etiqueta de color"
+# La transferencia se etiqueta como sRGB, no bt709, sin recodificar. Safari (Mac e
+# iPhone) sí aplica la curva bt709 de la etiqueta y levanta los medios tonos: los
+# clips se veían ~10/255 más claros, "sobreexpuestos", que el original. Chrome la
+# ignora. Con sRGB los dos pintan los píxeles tal cual salen del máster. En MP4
+# cuenta el átomo colr del contenedor, no solo el VUI del H.264: se cambian ambos.
+TMP="$(mktemp -d)"
+for f in "$OUT/$NAME.mp4" "$OUT/$NAME-m.mp4" "$OUT/$NAME-full.mp4"; do
+  ffmpeg -v error -y -i "$f" -map 0:v:0 -c copy \
+    -bsf:v h264_metadata=transfer_characteristics=13 -color_trc iec61966-2-1 \
+    -movflags +faststart+write_colr "$TMP/x.mp4" && mv "$TMP/x.mp4" "$f"
+done
+ffmpeg -v error -y -i "$OUT/$NAME.webm" -map 0:v:0 -c copy -color_trc iec61966-2-1 "$TMP/x.webm" \
+  && mv "$TMP/x.webm" "$OUT/$NAME.webm"
+rmdir "$TMP"
+
 echo
 echo "Listo. Pesos:"
 ls -lh "$OUT/$NAME".{webm,mp4,webp} "$OUT/$NAME-full.mp4" "$OUT/$NAME-m.mp4" | awk '{print "  " $9 "  " $5}'
