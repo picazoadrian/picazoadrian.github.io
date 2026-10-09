@@ -21,7 +21,7 @@
  */
 window.PROJECTS = [
   { src: 'assets/media/04', type: 'video', title: 'BTS of Aron Piper', subtitle: 'on set of the Scuffers campaign' },
-  { src: 'assets/media/07', type: 'video', title: 'MARCO POLO, MI MEJOR AMIGO', subtitle: 'DIR CREATIVA + COLOR' },
+  { src: 'assets/media/07', type: 'video', title: 'MARCO POLO, MI MEJOR AMIGO', subtitle: 'DIR CREATIVA, DIRECCIÓN Y COLOR' },
   { src: 'assets/media/06', type: 'video', title: 'Cadena SER', subtitle: 'Video Dept.' },
   { src: 'assets/media/02', type: 'video', title: 'Scuffers New York', subtitle: "Fall Winter 26'" },
   { src: 'assets/media/03', type: 'video', title: 'Scuffers Summer', subtitle: "Season 26'" },
