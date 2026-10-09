@@ -32,7 +32,7 @@
   --edge-tight: 12px;            /* margen del footer y de la barra (Figma: x=12) */
 
   --masthead-h: 51px;
-  --intro-block-h: 68px;     /* tres líneas de intro */
+  --intro-block-h: 56px;
   --intro-offset: 16px;          /* del inicio del bloque al top del texto */
   --grid-top-gap: 40px;          /* aire entre la intro y la primera fila */
   --footer-h: 85px;
@@ -440,7 +440,7 @@ html.has-custom-cursor .cursor.is-outside { opacity: 0; }
 @media (max-width: 767px) {
   :root {
     --masthead-h: 47px;
-    --intro-block-h: 36px;
+    --intro-block-h: 24px;
     --intro-offset: 0px;
     --edge: 12px;
     --type-ui: 12px;             /* el rango de anchuras es estrecho: px fijos */
