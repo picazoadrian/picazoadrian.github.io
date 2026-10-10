@@ -4,7 +4,7 @@
  * quieto sin indicador es justo el fallo que vio Hugo en móviles reales.
  *
  *   node scripts/mobile.mjs                       contra http://localhost:8000/
- *   node scripts/mobile.mjs https://picazoadrian.github.io/
+ *   node scripts/mobile.mjs https://adrianpicazo.com/
  *
  * La emulación de Playwright deja hacer autoplay a todo, así que se simulan las
  * políticas de los móviles de verdad:

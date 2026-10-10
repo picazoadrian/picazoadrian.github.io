@@ -102,7 +102,7 @@ const server = createServer(async (req, res) => {
 await new Promise((r) => server.listen(0, r));
 
 /* BASE_URL permite gatear el sitio YA PUBLICADO, no solo la copia local:
-   BASE_URL=https://picazoadrian.github.io node scripts/gate.mjs */
+   BASE_URL=https://adrianpicazo.com node scripts/gate.mjs */
 const url = process.env.BASE_URL || `http://localhost:${server.address().port}/`;
 if (process.env.BASE_URL) console.log(`Gateando ${url}`);
 

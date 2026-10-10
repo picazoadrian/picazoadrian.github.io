@@ -1,6 +1,6 @@
 # Adrián Picazo — portfolio
 
-**https://picazoadrian.github.io**
+**https://adrianpicazo.com**
 
 Sitio estático, sin build ni dependencias. Se publica en GitHub Pages desde la rama `main`.
 

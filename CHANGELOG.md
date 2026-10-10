@@ -3,6 +3,8 @@
 ## [Sin publicar]
 
 ### Añadido
+- Dominio propio `adrianpicazo.com` (DNS en Cloudflare, sin proxy). `www` y
+  `picazoadrian.github.io` redirigen a él. Canonical, `og:url`, `robots.txt` y `sitemap.xml`.
 - Réplica del diseño de Figma, verificada: geometría dentro de 0,5px en las dos anchuras de
   diseño (1512 y 402), diff visual del 0,42% y 0,59% —solo rasterizado de texto— y 11/11 en
   las pruebas de comportamiento.
